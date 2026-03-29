@@ -60,7 +60,7 @@ export default function HookScreen() {
   const { triggerHaptic } = useAuraContext();
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
 
-  const sl = i18nBase.language === 'sl';
+  const sl = i18nBase.language?.startsWith('sl');
 
   const changeLanguage = (lng: string) => {
     triggerHaptic('light');
@@ -68,108 +68,109 @@ export default function HookScreen() {
   };
 
   return (
-    <AuraBackground>
-      <View style={styles.container}>
-
-        {/* Language switcher - top center, slim */}
-        <MotiView
-          from={{ opacity: 0, translateY: -20 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: 'timing', delay: 300 }}
-          style={styles.langRow}
-        >
-          <TouchableOpacity
-            onPress={() => changeLanguage('sl')}
-            style={[styles.langBtn, i18nBase.language === 'sl' && styles.langBtnActive]}
-          >
-            <Text style={[styles.langBtnText, i18nBase.language === 'sl' && styles.langBtnTextActive]}>SLO</Text>
-          </TouchableOpacity>
-          <View style={styles.langDivider} />
-          <TouchableOpacity
-            onPress={() => changeLanguage('en')}
-            style={[styles.langBtn, i18nBase.language === 'en' && styles.langBtnActive]}
-          >
-            <Text style={[styles.langBtnText, i18nBase.language === 'en' && styles.langBtnTextActive]}>ENG</Text>
-          </TouchableOpacity>
-        </MotiView>
-
-        {/* Logo centered */}
-        <MotiView
-          from={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: 'timing', duration: 2000 }}
-          style={styles.logoWrapper}
-        >
-          <Image
-            source={require('../../assets/images/icon.png')}
-            style={styles.logoImage}
-            resizeMode="cover"
-          />
-        </MotiView>
-
-        {/* Bottom content */}
-        <View style={styles.bottomContent}>
-          <MotiText
-            from={{ opacity: 0, translateY: 30 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: 'timing', delay: 800, duration: 1000 }}
-            style={styles.title}
-          >
-            {t('welcome')}
-          </MotiText>
-
-          {/* Main CTA */}
+    <>
+      <AuraBackground>
+        <View style={styles.container}>
+          {/* Language switcher - top center, slim */}
           <MotiView
-            from={{ opacity: 0, translateY: 20 }}
+            from={{ opacity: 0, translateY: -20 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: 'timing', delay: 1200, duration: 800 }}
+            transition={{ type: 'timing', delay: 300 }}
+            style={styles.langRow}
           >
             <TouchableOpacity
-              activeOpacity={0.85}
-              onPress={() => { triggerHaptic('medium'); router.push('/onboarding'); }}
-              style={styles.ctaWrapper}
+              onPress={() => changeLanguage('sl')}
+              style={[styles.langBtn, i18nBase.language === 'sl' && styles.langBtnActive]}
             >
-              <LinearGradient
-                colors={['#BF953F', '#FCF6BA', '#AA771C']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.cta}
+              <Text style={[styles.langBtnText, i18nBase.language === 'sl' && styles.langBtnTextActive]}>SLO</Text>
+            </TouchableOpacity>
+            <View style={styles.langDivider} />
+            <TouchableOpacity
+              onPress={() => changeLanguage('en')}
+              style={[styles.langBtn, i18nBase.language === 'en' && styles.langBtnActive]}
+            >
+              <Text style={[styles.langBtnText, i18nBase.language === 'en' && styles.langBtnTextActive]}>ENG</Text>
+            </TouchableOpacity>
+          </MotiView>
+
+          {/* Logo centered */}
+          <MotiView
+            from={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'timing', duration: 2000 }}
+            style={styles.logoWrapper}
+          >
+            <Image
+              source={require('../../assets/images/icon.png')}
+              style={styles.logoImage}
+              resizeMode="cover"
+            />
+          </MotiView>
+
+          {/* Bottom content */}
+          <View style={styles.bottomContent}>
+            <MotiText
+              from={{ opacity: 0, translateY: 30 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', delay: 800, duration: 1000 }}
+              style={styles.title}
+            >
+              {t('welcome')}
+            </MotiText>
+
+            {/* Main CTA */}
+            <MotiView
+              from={{ opacity: 0, translateY: 20 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', delay: 1200, duration: 800 }}
+            >
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={() => { triggerHaptic('medium'); router.push('/onboarding'); }}
+                style={styles.ctaWrapper}
               >
-                <Text style={styles.ctaText}>{t('start_scan')}</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </MotiView>
+                <LinearGradient
+                  colors={['#BF953F', '#FCF6BA', '#AA771C']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.cta}
+                >
+                  <Text style={styles.ctaText}>{t('start_scan')}</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </MotiView>
 
-          {/* History - secondary link below CTA */}
-          <MotiView
-            from={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ type: 'timing', delay: 1600 }}
-            style={styles.historyRow}
-          >
-            <TouchableOpacity
-              onPress={() => { triggerHaptic('light'); router.push('/history'); }}
-              style={styles.historyBtn}
+            {/* History - secondary link below CTA */}
+            <MotiView
+              from={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ type: 'timing', delay: 1600 }}
+              style={styles.historyRow}
             >
-              <LucideHistory color={COLORS.secondary} size={16} />
-              <Text style={styles.historyText}>{t('history_title')}</Text>
-            </TouchableOpacity>
-          </MotiView>
+              <TouchableOpacity
+                onPress={() => { triggerHaptic('light'); router.push('/history'); }}
+                style={styles.historyBtn}
+              >
+                <LucideHistory color={COLORS.secondary} size={16} />
+                <Text style={styles.historyText}>{t('history_title')}</Text>
+              </TouchableOpacity>
+            </MotiView>
 
-          {/* Fine print disclaimer link */}
-          <MotiView
-            from={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ type: 'timing', delay: 2000 }}
-          >
-            <TouchableOpacity onPress={() => setDisclaimerOpen(true)} style={styles.finePrintBtn}>
-              <Text style={styles.finePrintText}>
-                {sl ? 'Pogoji uporabe' : 'Terms of Use'}
-              </Text>
-            </TouchableOpacity>
-          </MotiView>
+            {/* Fine print disclaimer link */}
+            <MotiView
+              from={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ type: 'timing', delay: 2000 }}
+            >
+              <TouchableOpacity onPress={() => setDisclaimerOpen(true)} style={styles.finePrintBtn}>
+                <Text style={styles.finePrintText}>
+                  {sl ? 'Pogoji uporabe' : 'Terms of Use'}
+                </Text>
+              </TouchableOpacity>
+            </MotiView>
+          </View>
         </View>
-      </View>
+      </AuraBackground>
 
       {/* ── DISCLAIMER MODAL ── */}
       <Modal
@@ -180,16 +181,13 @@ export default function HookScreen() {
       >
         <Pressable style={styles.modalOverlay} onPress={() => setDisclaimerOpen(false)}>
           <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
-            {/* Handle */}
             <View style={styles.modalHandle} />
-
-            {/* Header */}
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>
                 {sl ? '⚖️ Pogoji uporabe' : '⚖️ Terms of Use'}
               </Text>
               <TouchableOpacity onPress={() => setDisclaimerOpen(false)} style={styles.closeBtn}>
-                <LucideX color="rgba(255,255,255,0.5)" size={20} />
+                <LucideX color="#FFF" size={20} />
               </TouchableOpacity>
             </View>
 
@@ -202,7 +200,7 @@ export default function HookScreen() {
             <ScrollView
               style={styles.scrollArea}
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 20 }}
+              contentContainerStyle={{ paddingBottom: 30 }}
             >
               <Text style={styles.disclaimerText}>
                 {sl ? DISCLAIMER_SL : DISCLAIMER_EN}
@@ -220,7 +218,7 @@ export default function HookScreen() {
           </Pressable>
         </Pressable>
       </Modal>
-    </AuraBackground>
+    </>
   );
 }
 
