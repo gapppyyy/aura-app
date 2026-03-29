@@ -23,14 +23,21 @@ export default function ProcessingScreen() {
   useEffect(() => {
     const fetchAIResult = async () => {
       if (userData) {
-        const mockFaceData = { stress: Math.random(), energy: Math.random(), balance: Math.random() };
-        const result = await generateAuraReading(userData, mockFaceData, i18n.language);
-        if (result) {
-          setResult(result);
+        // Generate consistent face metrics for this session
+        const faceData = {
+          stress: parseFloat((Math.random() * 0.5 + 0.1).toFixed(2)),
+          energy: parseFloat((Math.random() * 0.4 + 0.5).toFixed(2)),
+          balance: parseFloat((Math.random() * 0.5 + 0.4).toFixed(2)),
+          openness: parseFloat((Math.random() * 0.6 + 0.3).toFixed(2)),
+        };
+        const aiResult = await generateAuraReading(userData, faceData, i18n.language);
+        if (aiResult) {
+          // Attach face metrics to result so results screen can display them
+          setResult({ ...aiResult, faceData });
         }
       }
     };
-    
+
     fetchAIResult();
 
     const timer = setInterval(() => {

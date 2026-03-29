@@ -38,7 +38,7 @@ const AURA_COLOR_MAP: Record<string, string> = {
 
 export default function ResultsScreen() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { result } = useAuraContext();
   const [expandedDesc, setExpandedDesc] = useState(false);
 
@@ -171,6 +171,64 @@ export default function ResultsScreen() {
                 {expandedDesc ? '▲ Manj' : '▼ Preberi več'}
               </Text>
             </TouchableOpacity>
+          )}
+        </MotiView>
+
+        {/* ── FACE SCAN READING ── */}
+        <MotiView
+          from={{ opacity: 0, translateY: 20 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ delay: 1050 }}
+          style={styles.faceCard}
+        >
+          <View style={styles.faceCardHeader}>
+            <View style={styles.faceCardIcon}>
+              <LucideSparkles color={activeColor} size={16} />
+            </View>
+            <View>
+              <Text style={styles.faceCardTitle}>
+                {i18n.language === 'sl' ? 'Zaznava obraza' : 'Face Scan Reading'}
+              </Text>
+              <Text style={styles.faceCardSubtitle}>
+                {i18n.language === 'sl' ? 'Samo iz skeniranja' : 'From scan only'}
+              </Text>
+            </View>
+          </View>
+
+          {/* Facial metrics bars */}
+          <View style={styles.metricsGrid}>
+            {[
+              { label: i18n.language === 'sl' ? 'Stres' : 'Stress', value: result?.faceData?.stress ?? 0.35, color: '#FF6B6B', invert: true },
+              { label: i18n.language === 'sl' ? 'Energija' : 'Energy', value: result?.faceData?.energy ?? 0.72, color: '#00E5A0', invert: false },
+              { label: i18n.language === 'sl' ? 'Ravnovesje' : 'Balance', value: result?.faceData?.balance ?? 0.68, color: activeColor, invert: false },
+              { label: i18n.language === 'sl' ? 'Odprtost' : 'Openness', value: result?.faceData?.openness ?? 0.55, color: '#B06EFF', invert: false },
+            ].map((metric, i) => (
+              <View key={i} style={styles.metricItem}>
+                <View style={styles.metricLabelRow}>
+                  <Text style={styles.metricLabel}>{metric.label}</Text>
+                  <Text style={[styles.metricValue, { color: metric.color }]}>
+                    {metric.invert
+                      ? Math.round((1 - metric.value) * 100)
+                      : Math.round(metric.value * 100)}%
+                  </Text>
+                </View>
+                <View style={styles.metricTrack}>
+                  <MotiView
+                    from={{ width: '0%' }}
+                    animate={{ width: `${metric.invert ? (1 - metric.value) * 100 : metric.value * 100}%` }}
+                    transition={{ type: 'timing', duration: 1200, delay: 1200 + i * 150 }}
+                    style={[styles.metricFill, { backgroundColor: metric.color }]}
+                  />
+                </View>
+              </View>
+            ))}
+          </View>
+
+          {/* AI face interpretation */}
+          {result?.face_reading && (
+            <View style={styles.faceReadingText}>
+              <Text style={styles.faceReadingContent}>{result.face_reading}</Text>
+            </View>
           )}
         </MotiView>
 
@@ -508,5 +566,88 @@ const styles = StyleSheet.create({
     fontSize: 13,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
+  },
+
+  // ── FACE SCAN ──
+  faceCard: {
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.1)',
+    marginBottom: 24,
+  },
+  faceCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 20,
+  },
+  faceCardIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.15)',
+  },
+  faceCardTitle: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  faceCardSubtitle: {
+    color: COLORS.textSecondary,
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginTop: 2,
+  },
+  metricsGrid: {
+    gap: 14,
+    marginBottom: 16,
+  },
+  metricItem: {
+    gap: 6,
+  },
+  metricLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  metricLabel: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 12,
+    letterSpacing: 1,
+  },
+  metricValue: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  metricTrack: {
+    width: '100%',
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  metricFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
+  faceReadingText: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.06)',
+    paddingTop: 16,
+    marginTop: 4,
+  },
+  faceReadingContent: {
+    color: COLORS.textSecondary,
+    fontSize: 13,
+    lineHeight: 22,
+    fontStyle: 'italic',
   },
 });

@@ -52,6 +52,7 @@ Return ONLY valid JSON in this exact format:
 {
   "color": "indigo | jade | ruby | gold | violet",
   "title": "Short poetic mystical aura title (max 8 words)",
+  "face_reading": "2-3 sentences interpreting ONLY the facial scan metrics (stress, energy, balance, openness). Be specific about what the face reveals energetically. In ${isSlove ? 'Slovenian' : 'English'}.",
   "description": "4-5 rich paragraphs of deep personal spiritual analysis in ${isSlove ? 'Slovenian' : 'English'}. Reference their specific age, focus area and goal. Be prophetic and specific.",
   "resonance": <integer between 62 and 97>,
   "evolution_state": "${isSlove ? 'Duhovna evolucija v 3 besedah' : 'Spiritual evolution state in 3 words'}",

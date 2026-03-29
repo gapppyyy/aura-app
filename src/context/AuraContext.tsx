@@ -14,6 +14,14 @@ export type AuraReading = {
   title: string;
   description: string;
   resonance: number;
+  evolution_state?: string;
+  face_reading?: string;
+  faceData?: {
+    stress: number;
+    energy: number;
+    balance: number;
+    openness: number;
+  };
   scenarios: {
     current: string;
     optimized: string;
