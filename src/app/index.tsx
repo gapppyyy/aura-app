@@ -164,9 +164,7 @@ export default function HookScreen() {
           >
             <TouchableOpacity onPress={() => setDisclaimerOpen(true)} style={styles.finePrintBtn}>
               <Text style={styles.finePrintText}>
-                {sl
-                  ? '🔮 Samo za zabavo · Pogoji uporabe'
-                  : '🔮 For entertainment only · Terms of Use'}
+                {sl ? 'Pogoji uporabe' : 'Terms of Use'}
               </Text>
             </TouchableOpacity>
           </MotiView>
@@ -197,7 +195,7 @@ export default function HookScreen() {
 
             <View style={styles.entertainmentBadge}>
               <Text style={styles.entertainmentText}>
-                {sl ? '🎭 SAMO ZA ZABAVO — NI STROKOVNI NASVET' : '🎭 ENTERTAINMENT ONLY — NOT PROFESSIONAL ADVICE'}
+                {sl ? 'ℹ️ AI NAPOVEDI SO SIMBOLIČNE NARAVE' : 'ℹ️ AI PREDICTIONS ARE SYMBOLIC IN NATURE'}
               </Text>
             </View>
 
