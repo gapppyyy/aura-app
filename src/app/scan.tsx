@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import { useAuraContext } from '@/context/AuraContext';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -45,11 +45,13 @@ const ENERGY_PARTICLES = [
 export default function ScanScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
-  const { triggerHaptic } = useAuraContext();
+  const { triggerHaptic, setCapturedImageBase64 } = useAuraContext();
   const [permission, requestPermission] = useCameraPermissions();
   const [stepIndex, setStepIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [scanColor, setScanColor] = useState(COLORS.secondary);
+  const [photoTaken, setPhotoTaken] = useState(false);
+  const cameraRef = useRef<any>(null);
 
   const steps = i18n.language === 'sl' ? SCAN_STEPS_SL : SCAN_STEPS_EN;
   const totalDuration = 9000;
@@ -70,9 +72,21 @@ export default function ScanScreen() {
       setScanColor(auraColors[colorIdx]);
     }, 1800);
 
-    // Progress bar
-    const progressInterval = setInterval(() => {
-      setProgress(prev => Math.min(prev + (100 / (totalDuration / 100)), 100));
+    // Progress bar + capture photo at 75%
+    const progressInterval = setInterval(async () => {
+      setProgress(prev => {
+        const next = Math.min(prev + (100 / (totalDuration / 100)), 100);
+        // Capture face photo at ~75% progress
+        if (next >= 75 && !photoTaken && cameraRef.current) {
+          setPhotoTaken(true);
+          cameraRef.current.takePictureAsync({ base64: true, quality: 0.6, skipProcessing: true })
+            .then((photo: any) => {
+              if (photo?.base64) setCapturedImageBase64(photo.base64);
+            })
+            .catch((e: any) => console.warn('Photo capture:', e));
+        }
+        return next;
+      });
     }, 100);
 
     // Step messages
@@ -110,7 +124,7 @@ export default function ScanScreen() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing="front" />
+      <CameraView ref={cameraRef} style={styles.camera} facing="front" />
 
       {/* Rich dark mystical overlay */}
       <View style={styles.darkOverlay} />

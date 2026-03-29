@@ -37,6 +37,8 @@ type AuraContextType = {
   history: AuraReading[];
   clearHistory: () => void;
   triggerHaptic: (type?: 'light' | 'medium' | 'heavy' | 'success') => void;
+  capturedImageBase64: string | null;
+  setCapturedImageBase64: (b64: string | null) => void;
 };
 
 const AuraContext = createContext<AuraContextType | undefined>(undefined);
@@ -45,6 +47,7 @@ export const AuraProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userData, setUserData] = useState<UserData | null>(null);
   const [result, setResultState] = useState<AuraReading | null>(null);
   const [history, setHistory] = useState<AuraReading[]>([]);
+  const [capturedImageBase64, setCapturedImageBase64] = useState<string | null>(null);
 
   useEffect(() => {
     loadHistory();
@@ -81,14 +84,16 @@ export const AuraProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuraContext.Provider value={{ 
-      userData, 
-      setUserData, 
-      result, 
-      setResult, 
-      history, 
+    <AuraContext.Provider value={{
+      userData,
+      setUserData,
+      result,
+      setResult,
+      history,
       clearHistory,
-      triggerHaptic 
+      triggerHaptic,
+      capturedImageBase64,
+      setCapturedImageBase64,
     }}>
       {children}
     </AuraContext.Provider>

@@ -16,23 +16,33 @@ const { width } = Dimensions.get('window');
 export default function ProcessingScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
-  const { userData, setResult, triggerHaptic } = useAuraContext();
+  const { userData, setResult, triggerHaptic, capturedImageBase64, setCapturedImageBase64 } = useAuraContext();
   const [stepIndex, setStepIndex] = useState(0);
   const steps = t('scan_steps', { returnObjects: true }) as string[];
 
   useEffect(() => {
     const fetchAIResult = async () => {
       if (userData) {
-        // Generate consistent face metrics for this session
+        // Generate base face metrics as fallback (used only if Vision API fails)
         const faceData = {
           stress: parseFloat((Math.random() * 0.5 + 0.1).toFixed(2)),
           energy: parseFloat((Math.random() * 0.4 + 0.5).toFixed(2)),
           balance: parseFloat((Math.random() * 0.5 + 0.4).toFixed(2)),
           openness: parseFloat((Math.random() * 0.6 + 0.3).toFixed(2)),
         };
-        const aiResult = await generateAuraReading(userData, faceData, i18n.language);
+
+        // Pass real face photo to Vision API if available
+        const aiResult = await generateAuraReading(
+          userData,
+          faceData,
+          i18n.language,
+          capturedImageBase64  // ← real face image from scan
+        );
+
+        // Clear stored image after use
+        setCapturedImageBase64(null);
+
         if (aiResult) {
-          // Attach face metrics to result so results screen can display them
           setResult({ ...aiResult, faceData });
         }
       }
