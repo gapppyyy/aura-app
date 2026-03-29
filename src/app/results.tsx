@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,7 @@ import {
   Share,
   Modal,
   Pressable,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -24,9 +25,14 @@ import {
   LucideTrendingUp,
   LucideChevronLeft,
   LucideRefreshCw,
+  LucideDownload,
+  LucideImage,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuraContext } from '@/context/AuraContext';
+import { ManifestationCard, CARD_WIDTH, CARD_HEIGHT } from '@/components/ManifestationCard';
+import ViewShot from 'react-native-view-shot';
+import * as MediaLibrary from 'expo-media-library';
 
 const { width } = Dimensions.get('window');
 
@@ -44,11 +50,142 @@ export default function ResultsScreen() {
   const { result } = useAuraContext();
   const [expandedDesc, setExpandedDesc] = useState(false);
   const [tooltip, setTooltip] = useState<{ title: string; plain: string } | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [showCardPreview, setShowCardPreview] = useState(false);
+  const cardRef = useRef<ViewShot>(null);
 
-  const showTip = (title: string, plain: string) => setTooltip({ title, plain });
+  const showTip = (title: string, plain: string) => setTooltip({ title, plain 
+  // ── MANIFESTATION EXPORT ──
+  manifestBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 16,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(192,132,252,0.35)',
+    backgroundColor: 'rgba(124,58,237,0.12)',
+    width: '100%',
+  },
+  manifestBtnText: {
+    color: '#C084FC',
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  hiddenCardContainer: {
+    position: 'absolute',
+    top: -9999,
+    left: -9999,
+    opacity: 0,
+  },
+  previewOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    justifyContent: 'flex-end',
+  },
+  previewSheet: {
+    backgroundColor: '#0E0720',
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 36,
+    borderWidth: 1,
+    borderColor: 'rgba(192,132,252,0.2)',
+    borderBottomWidth: 0,
+    maxHeight: '92%',
+    gap: 12,
+  },
+  previewHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 4,
+  },
+  previewTitle: {
+    color: '#C084FC',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textAlign: 'center',
+  },
+  previewSub: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  previewCardWrapper: {
+    alignItems: 'center',
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  saveCardBtn: {
+    borderRadius: 18,
+    overflow: 'hidden',
+  },
+  saveCardGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 18,
+  },
+  saveCardText: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  previewCloseBtn: {
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  previewCloseTxt: {
+    color: 'rgba(255,255,255,0.35)',
+    fontSize: 13,
+    letterSpacing: 1,
+  },
+});
   const hideTip = () => setTooltip(null);
 
   const sl = i18n.language === 'sl';
+
+  const handleSaveManifestCard = async () => {
+    setSaving(true);
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          sl ? 'Dovoljenje zavrnjeno' : 'Permission denied',
+          sl ? 'Prosim dovoli dostop do galerije v nastavitvah.' : 'Please allow gallery access in settings.'
+        );
+        setSaving(false);
+        return;
+      }
+      // Capture the card as image
+      const uri = await (cardRef.current as any)?.capture();
+      if (uri) {
+        await MediaLibrary.saveToLibraryAsync(uri);
+        setShowCardPreview(false);
+        Alert.alert(
+          sl ? '✨ Shranjeno!' : '✨ Saved!',
+          sl
+            ? 'Tvoja manifestacijska kartica je shranjena v galerijo. Natisni jo in jo postavi na vidno mesto!'
+            : 'Your manifestation card is saved to your gallery. Print it and place it where you can see it!'
+        );
+      }
+    } catch (e) {
+      console.error('Save error:', e);
+      Alert.alert(sl ? 'Napaka' : 'Error', sl ? 'Shranjevanje ni uspelo.' : 'Failed to save.');
+    }
+    setSaving(false);
+  };
 
   const activeColor = AURA_COLOR_MAP[result?.color || 'green'];
 
@@ -345,6 +482,17 @@ export default function ResultsScreen() {
             </LinearGradient>
           </TouchableOpacity>
 
+          {/* Manifestation card export button */}
+          <TouchableOpacity
+            onPress={() => setShowCardPreview(true)}
+            style={styles.manifestBtn}
+          >
+            <LucideImage color="#C084FC" size={18} />
+            <Text style={styles.manifestBtnText}>
+              {sl ? 'Shrani manifestacijsko kartico' : 'Save Manifestation Card'}
+            </Text>
+          </TouchableOpacity>
+
           {/* New reading button */}
           <TouchableOpacity style={styles.restartBtn} onPress={() => router.replace('/')}>
             <LucideRefreshCw color={COLORS.secondary} size={16} />
@@ -352,6 +500,82 @@ export default function ResultsScreen() {
           </TouchableOpacity>
         </MotiView>
       </ScrollView>
+
+      {/* ── HIDDEN MANIFESTATION CARD (for export) ── */}
+      <View style={styles.hiddenCardContainer} pointerEvents="none">
+        <ViewShot ref={cardRef} options={{ format: 'png', quality: 1.0 }}>
+          {result && (
+            <ManifestationCard
+              result={result}
+              userData={undefined}
+              language={i18n.language}
+            />
+          )}
+        </ViewShot>
+      </View>
+
+      {/* ── MANIFESTATION CARD PREVIEW MODAL ── */}
+      <Modal
+        visible={showCardPreview}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowCardPreview(false)}
+      >
+        <View style={styles.previewOverlay}>
+          <View style={styles.previewSheet}>
+            <View style={styles.previewHandle} />
+            <Text style={styles.previewTitle}>
+              {sl ? '✨ Manifestacijska kartica' : '✨ Manifestation Card'}
+            </Text>
+            <Text style={styles.previewSub}>
+              {sl
+                ? 'Shrani in natisni za dnevno manifestacijo'
+                : 'Save and print for daily manifestation'}
+            </Text>
+
+            {/* Card preview */}
+            <View style={styles.previewCardWrapper}>
+              {result && (
+                <ManifestationCard
+                  result={result}
+                  userData={undefined}
+                  language={i18n.language}
+                />
+              )}
+            </View>
+
+            {/* Actions */}
+            <TouchableOpacity
+              onPress={handleSaveManifestCard}
+              style={styles.saveCardBtn}
+              disabled={saving}
+            >
+              <LinearGradient
+                colors={['#7C3AED', '#A855F7', '#7C3AED']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.saveCardGradient}
+              >
+                <LucideDownload color="#FFF" size={18} />
+                <Text style={styles.saveCardText}>
+                  {saving
+                    ? (sl ? 'Shranjujem...' : 'Saving...')
+                    : (sl ? 'Shrani v galerijo' : 'Save to Gallery')}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setShowCardPreview(false)}
+              style={styles.previewCloseBtn}
+            >
+              <Text style={styles.previewCloseTxt}>
+                {sl ? 'Zapri' : 'Close'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* ── TOOLTIP MODAL ── */}
       <Modal visible={!!tooltip} transparent animationType="fade" onRequestClose={hideTip}>

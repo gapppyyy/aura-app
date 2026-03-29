@@ -34,7 +34,15 @@
       ],
       "expo-camera",
       "expo-localization",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Solaura AI želi shraniti tvojo manifestacijsko kartico v galerijo.",
+          "savePhotosPermission": "Solaura AI želi shraniti tvojo manifestacijsko kartico v galerijo.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
