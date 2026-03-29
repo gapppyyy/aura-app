@@ -385,9 +385,11 @@ const styles = StyleSheet.create({
   shareBtnText: {
     color: COLORS.primary,
     fontWeight: '900',
-    fontSize: 14,
-    letterSpacing: 1.5,
+    fontSize: 12,
+    letterSpacing: 1,
     textTransform: 'uppercase',
+    flexShrink: 1,
+    textAlign: 'center',
   },
   restartBtn: {
     paddingVertical: 20,

@@ -139,8 +139,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.3)',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 15,
+    gap: 8,
+    paddingHorizontal: 12,
+    flexShrink: 1,
+    maxWidth: '75%',
   },
   historyBtnWrapper: {
     // Spacer handled by justifyContent: 'space-between'

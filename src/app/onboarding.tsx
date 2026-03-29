@@ -237,9 +237,8 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30,
+    paddingHorizontal: 24,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   topBar: {
     position: 'absolute',
@@ -252,7 +251,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingVertical: 100,
-    width: '100%',
+    paddingHorizontal: 24,
   },
   stepContainer: {
     width: '100%',
