@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Share,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -41,6 +43,12 @@ export default function ResultsScreen() {
   const { t, i18n } = useTranslation();
   const { result } = useAuraContext();
   const [expandedDesc, setExpandedDesc] = useState(false);
+  const [tooltip, setTooltip] = useState<{ title: string; plain: string } | null>(null);
+
+  const showTip = (title: string, plain: string) => setTooltip({ title, plain });
+  const hideTip = () => setTooltip(null);
+
+  const sl = i18n.language === 'sl';
 
   const activeColor = AURA_COLOR_MAP[result?.color || 'green'];
 
@@ -187,27 +195,41 @@ export default function ResultsScreen() {
             <View style={styles.faceCardIcon}>
               <LucideSparkles color={activeColor} size={16} />
             </View>
-            <View>
+            <View style={{ flex: 1 }}>
               <Text style={styles.faceCardTitle}>
-                {i18n.language === 'sl' ? '✦ Svetlobni pečat duše' : '✦ Soul Light Imprint'}
+                {sl ? '✦ Svetlobni pečat duše' : '✦ Soul Light Imprint'}
               </Text>
               <Text style={styles.faceCardSubtitle}>
-                {i18n.language === 'sl' ? 'Prebrano iz tvojega energijskega polja' : 'Read from your energetic field'}
+                {sl ? 'Prebrano iz tvojega energijskega polja' : 'Read from your energetic field'}
               </Text>
             </View>
+            <TouchableOpacity
+              onPress={() => showTip(
+                sl ? '✦ Svetlobni pečat duše' : '✦ Soul Light Imprint',
+                sl ? 'Zaznava obraza — podatki prebrani neposredno iz tvojega skeniranja:  raven stresa, energije, ravnovesja in odprtosti.' : 'Face scan data — stress, energy, balance and openness levels read directly from your scan.'
+              )}
+              style={styles.infoBtn}
+            >
+              <Text style={styles.infoBtnText}>ⓘ</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Facial metrics bars */}
           <View style={styles.metricsGrid}>
             {[
-              { label: i18n.language === 'sl' ? 'Zemeljska obremenitev' : 'Earthly Burden', value: result?.faceData?.stress ?? 0.35, color: '#FF6B6B', invert: true },
-              { label: i18n.language === 'sl' ? 'Vitalna svetloba' : 'Vital Light', value: result?.faceData?.energy ?? 0.72, color: '#00E5A0', invert: false },
-              { label: i18n.language === 'sl' ? 'Harmonija čaker' : 'Chakra Harmony', value: result?.faceData?.balance ?? 0.68, color: activeColor, invert: false },
-              { label: i18n.language === 'sl' ? 'Duhovna receptivnost' : 'Spiritual Openness', value: result?.faceData?.openness ?? 0.55, color: '#B06EFF', invert: false },
+              { label: sl ? 'Zemeljska obremenitev' : 'Earthly Burden', plain: sl ? 'Raven stresa — koliko napetosti nosi tvoje telo.' : 'Stress level — how much tension your body carries.', value: result?.faceData?.stress ?? 0.35, color: '#FF6B6B', invert: true },
+              { label: sl ? 'Vitalna svetloba' : 'Vital Light', plain: sl ? 'Raven energije — kako živahno in polno se tvoje telo trenutno počuti.' : 'Energy level — how vibrant and full your body currently feels.', value: result?.faceData?.energy ?? 0.72, color: '#00E5A0', invert: false },
+              { label: sl ? 'Harmonija čaker' : 'Chakra Harmony', plain: sl ? 'Notranje ravnovesje — koliko so tvoje energijske točke usklajene med seboj.' : 'Inner balance — how aligned your energy centres are with each other.', value: result?.faceData?.balance ?? 0.68, color: activeColor, invert: false },
+              { label: sl ? 'Duhovna receptivnost' : 'Spiritual Openness', plain: sl ? 'Odprtost duha — koliko si pripravljen/a sprejeti nove energije in spremembe.' : 'Openness of spirit — how ready you are to receive new energies and change.', value: result?.faceData?.openness ?? 0.55, color: '#B06EFF', invert: false },
             ].map((metric, i) => (
               <View key={i} style={styles.metricItem}>
                 <View style={styles.metricLabelRow}>
-                  <Text style={styles.metricLabel}>{metric.label}</Text>
+                  <View style={styles.metricLabelInner}>
+                    <Text style={styles.metricLabel}>{metric.label}</Text>
+                    <TouchableOpacity onPress={() => showTip(metric.label, metric.plain)} style={styles.metricInfoBtn}>
+                      <Text style={styles.metricInfoText}>ⓘ</Text>
+                    </TouchableOpacity>
+                  </View>
                   <Text style={[styles.metricValue, { color: metric.color }]}>
                     {metric.invert
                       ? Math.round((1 - metric.value) * 100)
@@ -242,9 +264,20 @@ export default function ResultsScreen() {
           style={styles.vibSection}
         >
           <View style={styles.vibHeader}>
-            <Text style={styles.vibLabel}>
-              {i18n.language === 'sl' ? '⚡ Frekvenčna harmonija' : '⚡ Frequency Harmony'}
-            </Text>
+            <View style={styles.vibLabelRow}>
+              <Text style={styles.vibLabel}>
+                {sl ? '⚡ Frekvenčna harmonija' : '⚡ Frequency Harmony'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => showTip(
+                  sl ? '⚡ Frekvenčna harmonija' : '⚡ Frequency Harmony',
+                  sl ? 'Skupna vibracijska resonanca — ocena tvojega celotnega duhovnega stanja od 0 do 100.' : 'Overall vibrational resonance — your total spiritual state score from 0 to 100.'
+                )}
+                style={styles.metricInfoBtn}
+              >
+                <Text style={styles.metricInfoText}>ⓘ</Text>
+              </TouchableOpacity>
+            </View>
             <Text style={[styles.vibPercent, { color: activeColor }]}>{result?.resonance || 85}%</Text>
           </View>
           <View style={styles.vibTrack}>
@@ -274,6 +307,18 @@ export default function ResultsScreen() {
                   {item.icon}
                 </View>
                 <Text style={[styles.scenarioLabel, { color: item.accentColor }]}>{item.label}</Text>
+                <TouchableOpacity
+                  onPress={() => showTip(item.label,
+                    item.key === 'current'
+                      ? (sl ? 'Trenutna pot — kaj se bo zgodilo, če ostaneš na sedanji smeri.' : 'Current path — what happens if you stay on your present course.')
+                      : item.key === 'optimized'
+                      ? (sl ? 'Optimalna pot — kako doseči najboljšo možno prihodnost.' : 'Optimal path — how to reach your best possible future.')
+                      : (sl ? 'Karmična preizkušnja — ovire, ki te čakajo, če ne ukrepaš.' : 'Karmic trial — obstacles that await if you do not act.')
+                  )}
+                  style={styles.metricInfoBtn}
+                >
+                  <Text style={styles.metricInfoText}>ⓘ</Text>
+                </TouchableOpacity>
               </View>
               <Text style={styles.scenarioDesc}>{item.desc}</Text>
             </MotiView>
@@ -307,6 +352,29 @@ export default function ResultsScreen() {
           </TouchableOpacity>
         </MotiView>
       </ScrollView>
+
+      {/* ── TOOLTIP MODAL ── */}
+      <Modal visible={!!tooltip} transparent animationType="fade" onRequestClose={hideTip}>
+        <Pressable style={styles.tooltipOverlay} onPress={hideTip}>
+          <MotiView
+            from={{ translateY: 40, opacity: 0 }}
+            animate={{ translateY: 0, opacity: 1 }}
+            transition={{ type: 'timing', duration: 300 }}
+            style={styles.tooltipCard}
+          >
+            <View style={styles.tooltipHandle} />
+            <Text style={styles.tooltipTitle}>{tooltip?.title}</Text>
+            <View style={styles.tooltipDivider} />
+            <Text style={styles.tooltipPlain}>
+              {sl ? '💬 V preprostem jeziku:' : '💬 In plain language:'}
+            </Text>
+            <Text style={styles.tooltipText}>{tooltip?.plain}</Text>
+            <TouchableOpacity onPress={hideTip} style={styles.tooltipClose}>
+              <Text style={styles.tooltipCloseText}>{sl ? 'Razumem ✓' : 'Got it ✓'}</Text>
+            </TouchableOpacity>
+          </MotiView>
+        </Pressable>
+      </Modal>
     </AuraBackground>
   );
 }
@@ -654,4 +722,115 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     fontStyle: 'italic',
   },
+
+  // ── INFO BUTTONS ──
+  infoBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
+  },
+  infoBtnText: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  metricLabelInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  metricInfoBtn: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  metricInfoText: {
+    color: 'rgba(255,255,255,0.35)',
+    fontSize: 11,
+    fontWeight: '700',
+    lineHeight: 14,
+  },
+  vibLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  // ── TOOLTIP MODAL ──
+  tooltipOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  tooltipCard: {
+    backgroundColor: '#160D2E',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    padding: 28,
+    paddingBottom: 44,
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.2)',
+    borderBottomWidth: 0,
+  },
+  tooltipHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 24,
+  },
+  tooltipTitle: {
+    color: COLORS.secondary,
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 1,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  tooltipDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    marginBottom: 16,
+  },
+  tooltipPlain: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginBottom: 10,
+  },
+  tooltipText: {
+    color: '#FFF',
+    fontSize: 16,
+    lineHeight: 26,
+    fontWeight: '300',
+    marginBottom: 28,
+  },
+  tooltipClose: {
+    backgroundColor: 'rgba(212,175,55,0.15)',
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.3)',
+  },
+  tooltipCloseText: {
+    color: COLORS.secondary,
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+  },
 });
+
