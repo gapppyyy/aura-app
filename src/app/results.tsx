@@ -160,7 +160,9 @@ export default function ResultsScreen() {
         >
           <View style={styles.readingHeader}>
             <View style={[styles.readingDot, { backgroundColor: activeColor }]} />
-            <Text style={styles.readingHeaderText}>Tvoje duhovno branje</Text>
+            <Text style={styles.readingHeaderText}>
+              {i18n.language === 'sl' ? '🌌 Glas vesolja' : '🌌 Voice of the Universe'}
+            </Text>
           </View>
           <Text style={styles.readingText}>
             {expandedDesc ? result?.description : shortDesc}
@@ -187,10 +189,10 @@ export default function ResultsScreen() {
             </View>
             <View>
               <Text style={styles.faceCardTitle}>
-                {i18n.language === 'sl' ? 'Zaznava obraza' : 'Face Scan Reading'}
+                {i18n.language === 'sl' ? '✦ Svetlobni pečat duše' : '✦ Soul Light Imprint'}
               </Text>
               <Text style={styles.faceCardSubtitle}>
-                {i18n.language === 'sl' ? 'Samo iz skeniranja' : 'From scan only'}
+                {i18n.language === 'sl' ? 'Prebrano iz tvojega energijskega polja' : 'Read from your energetic field'}
               </Text>
             </View>
           </View>
@@ -198,10 +200,10 @@ export default function ResultsScreen() {
           {/* Facial metrics bars */}
           <View style={styles.metricsGrid}>
             {[
-              { label: i18n.language === 'sl' ? 'Stres' : 'Stress', value: result?.faceData?.stress ?? 0.35, color: '#FF6B6B', invert: true },
-              { label: i18n.language === 'sl' ? 'Energija' : 'Energy', value: result?.faceData?.energy ?? 0.72, color: '#00E5A0', invert: false },
-              { label: i18n.language === 'sl' ? 'Ravnovesje' : 'Balance', value: result?.faceData?.balance ?? 0.68, color: activeColor, invert: false },
-              { label: i18n.language === 'sl' ? 'Odprtost' : 'Openness', value: result?.faceData?.openness ?? 0.55, color: '#B06EFF', invert: false },
+              { label: i18n.language === 'sl' ? 'Zemeljska obremenitev' : 'Earthly Burden', value: result?.faceData?.stress ?? 0.35, color: '#FF6B6B', invert: true },
+              { label: i18n.language === 'sl' ? 'Vitalna svetloba' : 'Vital Light', value: result?.faceData?.energy ?? 0.72, color: '#00E5A0', invert: false },
+              { label: i18n.language === 'sl' ? 'Harmonija čaker' : 'Chakra Harmony', value: result?.faceData?.balance ?? 0.68, color: activeColor, invert: false },
+              { label: i18n.language === 'sl' ? 'Duhovna receptivnost' : 'Spiritual Openness', value: result?.faceData?.openness ?? 0.55, color: '#B06EFF', invert: false },
             ].map((metric, i) => (
               <View key={i} style={styles.metricItem}>
                 <View style={styles.metricLabelRow}>
@@ -240,7 +242,9 @@ export default function ResultsScreen() {
           style={styles.vibSection}
         >
           <View style={styles.vibHeader}>
-            <Text style={styles.vibLabel}>{t('vibration_label')}</Text>
+            <Text style={styles.vibLabel}>
+              {i18n.language === 'sl' ? '⚡ Frekvenčna harmonija' : '⚡ Frequency Harmony'}
+            </Text>
             <Text style={[styles.vibPercent, { color: activeColor }]}>{result?.resonance || 85}%</Text>
           </View>
           <View style={styles.vibTrack}>
