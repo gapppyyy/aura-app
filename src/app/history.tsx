@@ -224,7 +224,7 @@ export default function HistoryScreen() {
       {/* Hidden card for capture */}
       <View style={styles.hiddenCard} pointerEvents="none">
         <ViewShot ref={cardRef} options={{ format: 'png', quality: 1.0 }}>
-          {selected && <ManifestationCard result={selected} language={i18n.language} />}
+          {selected && <ManifestationCard result={selected} userData={selected.userData} language={i18n.language} />}
         </ViewShot>
       </View>
 
@@ -236,7 +236,7 @@ export default function HistoryScreen() {
             <Text style={styles.previewTitle}>{sl ? '✨ Manifestacijska kartica' : '✨ Manifestation Card'}</Text>
             <Text style={styles.previewSub}>{sl ? 'Shrani in natisni za dnevno manifestacijo' : 'Save and print for daily manifestation'}</Text>
             <View style={styles.previewCardWrapper}>
-              {selected && <ManifestationCard result={selected} language={i18n.language} />}
+              {selected && <ManifestationCard result={selected} userData={selected.userData} language={i18n.language} />}
             </View>
             <TouchableOpacity onPress={handleSaveCard} disabled={saving} style={styles.saveCardBtn}>
               <LinearGradient

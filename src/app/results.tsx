@@ -47,111 +47,14 @@ const AURA_COLOR_MAP: Record<string, string> = {
 export default function ResultsScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
-  const { result } = useAuraContext();
+  const { result, userData } = useAuraContext();
   const [expandedDesc, setExpandedDesc] = useState(false);
   const [tooltip, setTooltip] = useState<{ title: string; plain: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [showCardPreview, setShowCardPreview] = useState(false);
   const cardRef = useRef<ViewShot>(null);
 
-  const showTip = (title: string, plain: string) => setTooltip({ title, plain 
-  // ── MANIFESTATION EXPORT ──
-  manifestBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    paddingVertical: 16,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(192,132,252,0.35)',
-    backgroundColor: 'rgba(124,58,237,0.12)',
-    width: '100%',
-  },
-  manifestBtnText: {
-    color: '#C084FC',
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-  },
-  hiddenCardContainer: {
-    position: 'absolute',
-    top: -9999,
-    left: -9999,
-    opacity: 0,
-  },
-  previewOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.85)',
-    justifyContent: 'flex-end',
-  },
-  previewSheet: {
-    backgroundColor: '#0E0720',
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 36,
-    borderWidth: 1,
-    borderColor: 'rgba(192,132,252,0.2)',
-    borderBottomWidth: 0,
-    maxHeight: '92%',
-    gap: 12,
-  },
-  previewHandle: {
-    width: 40,
-    height: 4,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 4,
-  },
-  previewTitle: {
-    color: '#C084FC',
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textAlign: 'center',
-  },
-  previewSub: {
-    color: 'rgba(255,255,255,0.4)',
-    fontSize: 12,
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  previewCardWrapper: {
-    alignItems: 'center',
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  saveCardBtn: {
-    borderRadius: 18,
-    overflow: 'hidden',
-  },
-  saveCardGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    paddingVertical: 18,
-  },
-  saveCardText: {
-    color: '#FFF',
-    fontSize: 15,
-    fontWeight: '800',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
-  previewCloseBtn: {
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  previewCloseTxt: {
-    color: 'rgba(255,255,255,0.35)',
-    fontSize: 13,
-    letterSpacing: 1,
-  },
-});
+  const showTip = (title: string, plain: string) => setTooltip({ title, plain });
   const hideTip = () => setTooltip(null);
 
   const sl = i18n.language === 'sl';
@@ -504,10 +407,10 @@ export default function ResultsScreen() {
       {/* ── HIDDEN MANIFESTATION CARD (for export) ── */}
       <View style={styles.hiddenCardContainer} pointerEvents="none">
         <ViewShot ref={cardRef} options={{ format: 'png', quality: 1.0 }}>
-          {result && (
+           {result && (
             <ManifestationCard
               result={result}
-              userData={undefined}
+              userData={result.userData || (userData || undefined)}
               language={i18n.language}
             />
           )}
@@ -538,7 +441,7 @@ export default function ResultsScreen() {
               {result && (
                 <ManifestationCard
                   result={result}
-                  userData={undefined}
+                  userData={result.userData || (userData || undefined)}
                   language={i18n.language}
                 />
               )}
@@ -1056,5 +959,91 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1.5,
   },
+
+  manifestBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 16,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(192,132,252,0.35)',
+    backgroundColor: 'rgba(124,58,237,0.12)',
+    width: '100%',
+  },
+  manifestBtnText: {
+    color: '#C084FC',
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  hiddenCardContainer: {
+    position: 'absolute',
+    top: -9999,
+    left: -9999,
+    opacity: 0,
+  },
+  previewOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    justifyContent: 'flex-end',
+  },
+  previewSheet: {
+    backgroundColor: '#0E0720',
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 36,
+    borderWidth: 1,
+    borderColor: 'rgba(192,132,252,0.2)',
+    borderBottomWidth: 0,
+    maxHeight: '92%',
+    gap: 12,
+  },
+  previewHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 4,
+  },
+  previewTitle: {
+    color: '#C084FC',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textAlign: 'center',
+  },
+  previewSub: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  previewCardWrapper: {
+    alignItems: 'center',
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  saveCardBtn: { borderRadius: 18, overflow: 'hidden' },
+  saveCardGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 18,
+  },
+  saveCardText: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  previewCloseBtn: { paddingVertical: 12, alignItems: 'center' },
+  previewCloseTxt: { color: 'rgba(255,255,255,0.35)', fontSize: 13, letterSpacing: 1 },
 });
 

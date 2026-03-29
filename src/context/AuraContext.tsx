@@ -27,6 +27,7 @@ export type AuraReading = {
     optimized: string;
     risk: string;
   };
+  userData?: UserData;
 };
 
 type AuraContextType = {
@@ -61,8 +62,10 @@ export const AuraProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const setResult = async (newResult: AuraReading) => {
-    setResultState(newResult);
-    const newHistory = [newResult, ...history].slice(0, 20);
+    // Attach current userData if not already present
+    const readingWithUser = { ...newResult, userData: newResult.userData || (userData || undefined) };
+    setResultState(readingWithUser);
+    const newHistory = [readingWithUser, ...history].slice(0, 20);
     setHistory(newHistory);
     try {
       await AsyncStorage.setItem('aura_history', JSON.stringify(newHistory));
