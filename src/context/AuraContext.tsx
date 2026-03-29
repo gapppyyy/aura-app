@@ -2,8 +2,11 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 
+export type UserGender = 'male' | 'female' | 'other';
+
 export type UserData = {
   age: string;
+  gender: UserGender;
   focus: string;
   mood: string;
   goal: string;

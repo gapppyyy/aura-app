@@ -16,7 +16,7 @@ const { width } = Dimensions.get('window');
 export default function ProcessingScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
-  const { userData, setResult, triggerHaptic, capturedImageBase64, setCapturedImageBase64 } = useAuraContext();
+  const { userData, setResult, triggerHaptic, capturedImageBase64, setCapturedImageBase64, history } = useAuraContext();
   const [stepIndex, setStepIndex] = useState(0);
   const steps = t('scan_steps', { returnObjects: true }) as string[];
 
@@ -36,7 +36,8 @@ export default function ProcessingScreen() {
           userData,
           faceData,
           i18n.language,
-          capturedImageBase64  // ← real face image from scan
+          capturedImageBase64,
+          history
         );
 
         // Clear stored image after use

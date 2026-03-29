@@ -11,7 +11,8 @@ export const generateAuraReading = async (
   userData: any,
   faceData: any,
   language: string,
-  imageBase64?: string | null
+  imageBase64?: string | null,
+  history: any[] = []
 ) => {
   const isSlove = language === 'sl';
 
@@ -28,7 +29,8 @@ PRAVILA:
 - scenarios.current: Kaj se bo zgodilo, če ostane na trenutni poti.
 - scenarios.optimized: Natančna pot do najboljše možne prihodnosti.
 - scenarios.risk: Karmična nevarnost, ki ga čaka, če ne ukrepa.
-- face_reading: Interpretiraj SAMO kar vidiš na obrazu — izraz, energijo, napetost, odprtost.`
+- face_reading: Interpretiraj SAMO kar vidiš na obrazu — izraz, energijo, napetost, odprtost.
+- SLOVNIČNI SPOL: Vedno piši v pravilnem slovničnem spolu glede na profil uporabnika (moški/ženska/nevtralno). Če je uporabnik moški, ne piši v ženskem spolu in obratno.`
     : `You are Solaura AI, a deep spiritual oracle and expert astral analyst powered by the most advanced AI.
 Your mission is to generate an EXCEPTIONALLY personal, deep and accurate aura reading.
 
@@ -41,12 +43,14 @@ RULES:
 - scenarios.current: What happens if they stay on their current path.
 - scenarios.optimized: Exact path to the best possible future.
 - scenarios.risk: Karmic danger awaiting if they don't act.
-- face_reading: Interpret ONLY what you see in the face — expression, energy, tension, openness.`;
+- face_reading: Interpret ONLY what you see in the face — expression, energy, tension, openness.
+- GENDER: Use appropriate pronouns based on user profiles.`
 
   const textContent = `USER PROFILE:
 - Age: ${userData.age} years
 - Life Focus Area: ${userData.focus}
 - Future Manifestation Goal: ${userData.goal}
+- Gender: ${userData.gender}
 - Current Mood: ${userData.mood || 'Neutral'}
 
 ${imageBase64
@@ -59,6 +63,14 @@ ${imageBase64
 - Balance: ${faceData?.balance ?? 0.6}
 - Openness: ${faceData?.openness ?? 0.5}`
 }
+
+${history && history.length > 0 ? `
+PAST SOUL READINGS (for continuity):
+${history.slice(0, 2).map((h, i) => `[${i + 1}] Title: ${h.title}, Color: ${h.color}`).join('\n')}
+
+INSTRUCTIONS:
+- Use past readings to deepen the current analysis.
+- Create a sense of spiritual evolution or continuation.` : ''}
 
 Return ONLY valid JSON:
 {

@@ -24,6 +24,10 @@
     "input_mood_hint": "How do you feel right now? (e.g. peaceful, stressed, ready for change, happy).",
     "input_goal": "Your Future Manifestation",
     "input_goal_hint": "What is the ONE thing you want to attract or achieve in the next year?",
+    "input_gender": "Your Identity",
+    "gender_male": "Male",
+    "gender_female": "Female",
+    "gender_other": "Beyond binary",
     "scan_analyzing": "Reading energy frequency...",
     "scan_subtext": "Keep your spirit steady",
     "scan_steps": [
@@ -78,6 +82,10 @@
     "input_mood_hint": "Opiši svojo notranjo energijo v tem trenutku (npr. 'miren/a', 'pod stresom', 'pripravljen/a na spremembe').",
     "input_goal": "Tvoja manifestacija prihodnosti",
     "input_goal_hint": "Katera ENA stvar je tista, ki jo želiš privabiti ali doseči v naslednjem letu?",
+    "input_gender": "Tvoja identiteta",
+    "gender_male": "Moški",
+    "gender_female": "Ženska",
+    "gender_other": "Drugo / Neopredeljeno",
     "scan_analyzing": "Berem frekvenco energije...",
     "scan_subtext": "Ohrani mirnega duha",
     "scan_steps": [

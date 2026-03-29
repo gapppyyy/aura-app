@@ -36,6 +36,7 @@ export default function OnboardingScreen() {
   const [step, setStep] = useState(STEPS.VALUE);
   const [permission, requestPermission] = useCameraPermissions();
   const [age, setAge] = useState('');
+  const [gender, setGender] = useState<any>(null);
   const [focus, setFocus] = useState('');
   const [goal, setGoal] = useState('');
   const scrollRef = useRef<ScrollView>(null);
@@ -51,7 +52,7 @@ export default function OnboardingScreen() {
         setStep(STEPS.INPUT);
       }
     } else {
-      setUserData({ age, focus, mood: 'Neutral', goal });
+      setUserData({ age, focus, mood: 'Neutral', goal, gender });
       router.push('/scan');
     }
   };
@@ -147,6 +148,32 @@ export default function OnboardingScreen() {
             />
           </View>
 
+          {/* Gender */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputTitle}>{t('input_gender')}</Text>
+            <View style={styles.genderRow}>
+              {[
+                { key: 'male', label: t('gender_male') },
+                { key: 'female', label: t('gender_female') },
+                { key: 'other', label: t('gender_other') },
+              ].map((g) => (
+                <TouchableOpacity
+                  key={g.key}
+                  onPress={() => { triggerHaptic('light'); setGender(g.key); }}
+                  style={[
+                    styles.genderTab,
+                    gender === g.key && styles.genderTabActive,
+                  ]}
+                >
+                  <Text style={[
+                    styles.genderTabText,
+                    gender === g.key && styles.genderTabTextActive
+                  ]}>{g.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
           {/* Focus */}
           <View style={styles.inputGroup}>
             <Text style={styles.inputTitle}>{t('input_focus')}</Text>
@@ -195,9 +222,9 @@ export default function OnboardingScreen() {
 
           {/* Submit */}
           <TouchableOpacity
-            style={[styles.nextBtnWrapper, { opacity: (age && focus && goal) ? 1 : 0.4, marginBottom: 20 }]}
+            style={[styles.nextBtnWrapper, { opacity: (age && focus && goal && gender) ? 1 : 0.4, marginBottom: 20 }]}
             onPress={handleNext}
-            disabled={!(age && focus && goal)}
+            disabled={!(age && focus && goal && gender)}
           >
             <LinearGradient
               colors={['#BF953F', '#FCF6BA', '#AA771C']}
@@ -371,5 +398,32 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     textAlign: 'center',
     letterSpacing: 0.5,
+  },
+  genderRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 4,
+  },
+  genderTab: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    alignItems: 'center',
+  },
+  genderTabActive: {
+    borderColor: COLORS.secondary,
+    backgroundColor: 'rgba(212,175,55,0.15)',
+  },
+  genderTabText: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  genderTabTextActive: {
+    color: COLORS.secondary,
+    fontWeight: '700',
   },
 });
