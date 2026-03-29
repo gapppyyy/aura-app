@@ -7,7 +7,6 @@ import { AuraBackground } from '@/components/AuraBackground';
 import { COLORS } from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'react-native';
-
 import { useAuraContext } from '@/context/AuraContext';
 import { LucideHistory } from 'lucide-react-native';
 
@@ -26,62 +25,46 @@ export default function HookScreen() {
   return (
     <AuraBackground>
       <View style={styles.container}>
-        
-        {/* Top Controls */}
-        <View style={styles.topControls}>
-           <MotiView 
-              from={{ opacity: 0, translateY: -20 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', delay: 300 }}
-              style={styles.langContainer}
-           >
-              <Text style={styles.langLabel}>{t('choose_language')}</Text>
-              <View style={styles.langOptions}>
-                 <TouchableOpacity 
-                    onPress={() => changeLanguage('sl')}
-                    style={[styles.langBtn, i18nBase.language === 'sl' && styles.langBtnActive]}
-                 >
-                    <Text style={[styles.langBtnText, i18nBase.language === 'sl' && styles.langBtnTextActive]}>SLO</Text>
-                 </TouchableOpacity>
-                 <View style={styles.langDivider} />
-                 <TouchableOpacity 
-                    onPress={() => changeLanguage('en')}
-                    style={[styles.langBtn, i18nBase.language === 'en' && styles.langBtnActive]}
-                 >
-                    <Text style={[styles.langBtnText, i18nBase.language === 'en' && styles.langBtnTextActive]}>ENG</Text>
-                 </TouchableOpacity>
-              </View>
-           </MotiView>
 
-           <MotiView
-             from={{ opacity: 0, scale: 0.5 }}
-             animate={{ opacity: 1, scale: 1 }}
-             style={styles.historyBtnWrapper}
-           >
-              <TouchableOpacity 
-                onPress={() => { triggerHaptic('medium'); router.push('/history'); }}
-                style={styles.historyBtn}
-              >
-                  <LucideHistory color={COLORS.secondary} size={24} />
-              </TouchableOpacity>
-           </MotiView>
-        </View>
+        {/* Language switcher - top center, slim */}
+        <MotiView
+          from={{ opacity: 0, translateY: -20 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', delay: 300 }}
+          style={styles.langRow}
+        >
+          <TouchableOpacity
+            onPress={() => changeLanguage('sl')}
+            style={[styles.langBtn, i18nBase.language === 'sl' && styles.langBtnActive]}
+          >
+            <Text style={[styles.langBtnText, i18nBase.language === 'sl' && styles.langBtnTextActive]}>SLO</Text>
+          </TouchableOpacity>
+          <View style={styles.langDivider} />
+          <TouchableOpacity
+            onPress={() => changeLanguage('en')}
+            style={[styles.langBtn, i18nBase.language === 'en' && styles.langBtnActive]}
+          >
+            <Text style={[styles.langBtnText, i18nBase.language === 'en' && styles.langBtnTextActive]}>ENG</Text>
+          </TouchableOpacity>
+        </MotiView>
 
-        <MotiView 
+        {/* Logo centered */}
+        <MotiView
           from={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'timing', duration: 2000 }}
           style={styles.logoWrapper}
         >
-          <Image 
-            source={require('../../assets/images/icon.png')} 
+          <Image
+            source={require('../../assets/images/icon.png')}
             style={styles.logoImage}
             resizeMode="cover"
           />
         </MotiView>
 
-        <View style={styles.content}>
-          <MotiText 
+        {/* Bottom content */}
+        <View style={styles.bottomContent}>
+          <MotiText
             from={{ opacity: 0, translateY: 30 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: 'timing', delay: 800, duration: 1000 }}
@@ -90,14 +73,15 @@ export default function HookScreen() {
             {t('welcome')}
           </MotiText>
 
+          {/* Main CTA */}
           <MotiView
             from={{ opacity: 0, translateY: 20 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: 'timing', delay: 1200, duration: 800 }}
           >
-            <TouchableOpacity 
-              activeOpacity={0.8}
-              onPress={() => router.push('/onboarding')}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => { triggerHaptic('medium'); router.push('/onboarding'); }}
               style={styles.ctaWrapper}
             >
               <LinearGradient
@@ -110,6 +94,22 @@ export default function HookScreen() {
               </LinearGradient>
             </TouchableOpacity>
           </MotiView>
+
+          {/* History - secondary link below CTA */}
+          <MotiView
+            from={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ type: 'timing', delay: 1600 }}
+            style={styles.historyRow}
+          >
+            <TouchableOpacity
+              onPress={() => { triggerHaptic('light'); router.push('/history'); }}
+              style={styles.historyBtn}
+            >
+              <LucideHistory color={COLORS.secondary} size={16} />
+              <Text style={styles.historyText}>{t('history_title')}</Text>
+            </TouchableOpacity>
+          </MotiView>
         </View>
       </View>
     </AuraBackground>
@@ -119,65 +119,22 @@ export default function HookScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
-    padding: 30,
-    paddingBottom: 80,
+    alignItems: 'center',
   },
-  topControls: {
+  langRow: {
     position: 'absolute',
     top: 60,
-    left: 20,
-    right: 20,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    zIndex: 100,
-  },
-  langContainer: {
-    padding: 5,
-    borderRadius: 20,
     backgroundColor: 'rgba(0,0,0,0.3)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 12,
-    flexShrink: 1,
-    maxWidth: '75%',
-  },
-  historyBtnWrapper: {
-    // Spacer handled by justifyContent: 'space-between'
-  },
-  historyBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.2)',
-  },
-  langLabel: {
-    color: '#D4AF37',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    marginBottom: 8,
-    opacity: 0.8,
-  },
-  langOptions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 30,
     padding: 4,
     borderWidth: 1,
     borderColor: 'rgba(212, 175, 55, 0.15)',
   },
   langBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 22,
+    paddingVertical: 9,
     borderRadius: 25,
   },
   langBtnActive: {
@@ -187,6 +144,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.4)',
     fontSize: 12,
     fontWeight: '700',
+    letterSpacing: 1,
   },
   langBtnTextActive: {
     color: '#D4AF37',
@@ -199,35 +157,39 @@ const styles = StyleSheet.create({
   logoWrapper: {
     position: 'absolute',
     top: '18%',
-    left: 0,
-    right: 0,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   logoImage: {
-    width: 260,
-    height: 260,
-    borderRadius: 60,
+    width: 250,
+    height: 250,
+    borderRadius: 55,
     borderWidth: 2,
-    borderColor: 'rgba(212, 175, 55, 0.2)', // Thin golden circle border
+    borderColor: 'rgba(212, 175, 55, 0.2)',
   },
-  content: {
-    gap: 30,
+  bottomContent: {
+    position: 'absolute',
+    bottom: 50,
+    left: 24,
+    right: 24,
+    gap: 20,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 42,
+    fontSize: 40,
     fontWeight: '300',
     color: '#FFF',
     textAlign: 'center',
-    lineHeight: 52,
+    lineHeight: 50,
     letterSpacing: 1,
+    marginBottom: 8,
   },
   ctaWrapper: {
     borderRadius: 99,
     overflow: 'hidden',
+    width: width - 48,
   },
   cta: {
-    paddingVertical: 20,
+    paddingVertical: 22,
     alignItems: 'center',
   },
   ctaText: {
@@ -236,5 +198,25 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: 2.5,
     textTransform: 'uppercase',
+  },
+  historyRow: {
+    alignItems: 'center',
+  },
+  historyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.2)',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  historyText: {
+    color: COLORS.secondary,
+    fontSize: 13,
+    fontWeight: '500',
+    letterSpacing: 1,
   },
 });
