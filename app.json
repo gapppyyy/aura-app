@@ -33,7 +33,6 @@
         }
       ],
       "expo-camera",
-      "expo-sharing",
       "expo-localization",
       "expo-font"
     ],
