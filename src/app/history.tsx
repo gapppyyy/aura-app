@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, ScrollView, Alert, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { MotiView } from 'moti';
@@ -230,8 +230,8 @@ export default function HistoryScreen() {
 
       {/* Card preview modal */}
       <Modal visible={showCardPreview} transparent animationType="slide" onRequestClose={() => setShowCardPreview(false)}>
-        <View style={styles.previewOverlay}>
-          <View style={styles.previewSheet}>
+        <Pressable style={styles.previewOverlay} onPress={() => setShowCardPreview(false)}>
+          <Pressable style={styles.previewSheet} onPress={(e) => e.stopPropagation()}>
             <View style={styles.previewHandle} />
             <Text style={styles.previewTitle}>{sl ? '✨ Manifestacijska kartica' : '✨ Manifestation Card'}</Text>
             <Text style={styles.previewSub}>{sl ? 'Shrani in natisni za dnevno manifestacijo' : 'Save and print for daily manifestation'}</Text>
@@ -253,8 +253,8 @@ export default function HistoryScreen() {
             <TouchableOpacity onPress={() => setShowCardPreview(false)} style={styles.previewCloseBtn}>
               <Text style={styles.previewCloseTxt}>{sl ? 'Zapri' : 'Close'}</Text>
             </TouchableOpacity>
-          </View>
-        </View>
+            </Pressable>
+        </Pressable>
       </Modal>
     </>
   );
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   previewOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'flex-end' },
   previewSheet: {
     backgroundColor: '#0E0720', borderTopLeftRadius: 36, borderTopRightRadius: 36,
-    paddingHorizontal: 20, paddingTop: 16, paddingBottom: 36,
+    paddingHorizontal: 20, paddingTop: 16, paddingBottom: 60,
     borderWidth: 1, borderColor: 'rgba(192,132,252,0.2)', borderBottomWidth: 0,
     maxHeight: '92%', gap: 12,
   },

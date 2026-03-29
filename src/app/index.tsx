@@ -214,7 +214,7 @@ export default function HookScreen() {
               style={styles.closeFooterBtn}
             >
               <Text style={styles.closeFooterText}>
-                {sl ? 'Razumem — samo za zabavo ✓' : 'Understood — for fun only ✓'}
+                {sl ? 'Potrjujem in soglašam ✓' : 'Confirm & Agree ✓'}
               </Text>
             </TouchableOpacity>
           </Pressable>
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   },
   bottomContent: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 50,
     left: 24,
     right: 24,
     gap: 16,
@@ -330,8 +330,9 @@ const styles = StyleSheet.create({
 
   // Fine print
   finePrintBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    marginTop: 8,
   },
   finePrintText: {
     color: 'rgba(255,255,255,0.25)',
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 36,
     paddingHorizontal: 24,
     paddingTop: 16,
-    paddingBottom: 36,
+    paddingBottom: 50,
     maxHeight: '85%',
     borderWidth: 1,
     borderColor: 'rgba(212,175,55,0.15)',

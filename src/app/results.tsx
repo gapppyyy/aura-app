@@ -424,8 +424,8 @@ export default function ResultsScreen() {
         animationType="slide"
         onRequestClose={() => setShowCardPreview(false)}
       >
-        <View style={styles.previewOverlay}>
-          <View style={styles.previewSheet}>
+        <Pressable style={styles.previewOverlay} onPress={() => setShowCardPreview(false)}>
+          <Pressable style={styles.previewSheet} onPress={(e) => e.stopPropagation()}>
             <View style={styles.previewHandle} />
             <Text style={styles.previewTitle}>
               {sl ? '✨ Manifestacijska kartica' : '✨ Manifestation Card'}
@@ -476,8 +476,8 @@ export default function ResultsScreen() {
                 {sl ? 'Zapri' : 'Close'}
               </Text>
             </TouchableOpacity>
-          </View>
-        </View>
+            </Pressable>
+        </Pressable>
       </Modal>
 
       {/* ── TOOLTIP MODAL ── */}
@@ -995,7 +995,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 36,
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 36,
+    paddingBottom: 60,
     borderWidth: 1,
     borderColor: 'rgba(192,132,252,0.2)',
     borderBottomWidth: 0,

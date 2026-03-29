@@ -70,8 +70,8 @@ Return ONLY valid JSON:
   "evolution_state": "${isSlove ? 'Duhovno stanje v 3 besedah' : 'Spiritual state in 3 words'}",
   "scenarios": {
     "current": "${isSlove ? '2-3 stavki o sedanji poti' : '2-3 sentences about current path'}",
-    "optimized": "${isSlove ? '2-3 stavki o idealni poti' : '2-3 sentences about optimal path'}",
-    "risk": "${isSlove ? '2-3 stavki o karmični nevarnosti' : '2-3 sentences about karmic risk'}"
+    "optimized": "${isSlove ? 'Bodi izjemno konkreten in manifestacijski. 2-3 stavki o IDEALNI POTI, ki so krepki, vzpodbudni in zvenijo kot močna afirmacija.' : 'Be extremely specific and manifestational. 2-3 sentences about the IDEAL PATH that are bold, encouraging, and sound like a powerful affirmation.'}",
+    "risk": "${isSlove ? 'Karmična nevarnost ali blokada v 2 stavkih' : 'Karmic danger or blockage in 2 sentences'}"
   }
 }`;
 
