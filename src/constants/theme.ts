@@ -1,65 +1,29 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+export const COLORS = {
+  primary: '#2D0B5A', // Deep Mystical Violet
+  secondary: '#FFD700', // Celestial Gold
+  accent: '#A020F0', // Spiritual Purple
+  background: '#0F051D', // Dark Cosmic Night
+  text: '#F8F8FF', // Ghost White
+  textSecondary: '#B7A2CC', // Lavender Mist
+  error: '#FF4D4D',
+  success: '#4CD964',
+  auraBlue: '#4D4FFF',
+  auraGreen: '#00FF9C',
+  auraRed: '#FF4136',
+  auraYellow: '#FFDC00',
+  auraMagenta: '#FF00FF',
+  goldGradient: ['#D4AF37', '#FFD700', '#F9E29C'],
+  violetGradient: ['#1A0033', '#2D0B5A', '#4B0082'],
+};
 
-import '@/global.css';
+export const GRADIENTS = {
+  main: ['#0F051D', '#1A0033', '#2D0B5A'],
+  mystical: ['#2D0B5A', '#A020F0', '#FFD700'],
+  gold: ['#BF953F', '#FCF6BA', '#B38728', '#FBF5B7', '#AA771C'],
+};
 
-import { Platform } from 'react-native';
-
-export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
-} as const;
-
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
-
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
-
-export const Spacing = {
-  half: 2,
-  one: 4,
-  two: 8,
-  three: 16,
-  four: 24,
-  five: 32,
-  six: 64,
-} as const;
-
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+export const FONTS = {
+  bold: 'Inter-Bold',
+  medium: 'Inter-Medium',
+  regular: 'Inter-Regular',
+};
