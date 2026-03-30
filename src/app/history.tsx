@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ManifestationCard } from '@/components/ManifestationCard';
 import ViewShot from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const AURA_COLOR_MAP: Record<string, string> = {
   green: '#00E5A0',
@@ -26,6 +27,7 @@ const AURA_COLOR_MAP: Record<string, string> = {
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
   const { history, setResult, clearHistory, triggerHaptic } = useAuraContext();
   const [selected, setSelected] = useState<AuraReading | null>(null);
@@ -117,7 +119,7 @@ export default function HistoryScreen() {
           data={history}
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderItem}
-          contentContainerStyle={styles.listContainer}
+          contentContainerStyle={[styles.listContainer, { paddingBottom: insets.bottom + 40 }]}
           ListEmptyComponent={
             <MotiView
               from={{ opacity: 0, scale: 0.9 }}
@@ -148,8 +150,8 @@ export default function HistoryScreen() {
 
         {/* Detail modal */}
         <Modal visible={!!selected} transparent animationType="slide" onRequestClose={() => setSelected(null)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalCard}>
+          <Pressable style={styles.modalOverlay} onPress={() => setSelected(null)}>
+            <Pressable style={[styles.modalCard, { paddingBottom: Math.max(30, insets.bottom + 10) }]} onPress={(e) => e.stopPropagation()}>
               <View style={styles.modalHandle} />
               <TouchableOpacity style={styles.modalClose} onPress={() => setSelected(null)}>
                 <LucideX color="rgba(255,255,255,0.5)" size={22} />
@@ -216,8 +218,8 @@ export default function HistoryScreen() {
                   );
                 })()}
               </ScrollView>
-            </View>
-          </View>
+            </Pressable>
+          </Pressable>
         </Modal>
       </AuraBackground>
 
@@ -231,13 +233,22 @@ export default function HistoryScreen() {
       {/* Card preview modal */}
       <Modal visible={showCardPreview} transparent animationType="slide" onRequestClose={() => setShowCardPreview(false)}>
         <Pressable style={styles.previewOverlay} onPress={() => setShowCardPreview(false)}>
-          <Pressable style={styles.previewSheet} onPress={(e) => e.stopPropagation()}>
+          <Pressable style={[styles.previewSheet, { paddingBottom: Math.max(30, insets.bottom + 10) }]} onPress={(e) => e.stopPropagation()}>
             <View style={styles.previewHandle} />
-            <Text style={styles.previewTitle}>{sl ? '✨ Manifestacijska kartica' : '✨ Manifestation Card'}</Text>
+            
+            <View style={styles.previewHeaderFixed}>
+              <Text style={styles.previewTitle}>{sl ? '✨ Manifestacijska kartica' : '✨ Manifestation Card'}</Text>
+              <TouchableOpacity onPress={() => setShowCardPreview(false)} style={styles.previewCloseBtnTop}>
+                <LucideX color="rgba(255,255,255,0.5)" size={24} />
+              </TouchableOpacity>
+            </View>
+
             <Text style={styles.previewSub}>{sl ? 'Shrani in natisni za dnevno manifestacijo' : 'Save and print for daily manifestation'}</Text>
+            
             <View style={styles.previewCardWrapper}>
               {selected && <ManifestationCard result={selected} userData={selected.userData} language={i18n.language} />}
             </View>
+            
             <TouchableOpacity onPress={handleSaveCard} disabled={saving} style={styles.saveCardBtn}>
               <LinearGradient
                 colors={['#7C3AED', '#A855F7', '#7C3AED']}
@@ -250,6 +261,7 @@ export default function HistoryScreen() {
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
+            
             <TouchableOpacity onPress={() => setShowCardPreview(false)} style={styles.previewCloseBtn}>
               <Text style={styles.previewCloseTxt}>{sl ? 'Zapri' : 'Close'}</Text>
             </TouchableOpacity>
@@ -308,10 +320,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 36,
     padding: 24,
     paddingBottom: 40,
-    maxHeight: '88%',
+    maxHeight: '90%',
     borderWidth: 1,
     borderColor: 'rgba(212,175,55,0.2)',
     borderBottomWidth: 0,
+    width: '100%',
   },
   modalHandle: { width: 40, height: 4, backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
   modalClose: { position: 'absolute', top: 20, right: 20, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.07)', justifyContent: 'center', alignItems: 'center' },
@@ -344,9 +357,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#0E0720', borderTopLeftRadius: 36, borderTopRightRadius: 36,
     paddingHorizontal: 20, paddingTop: 16, paddingBottom: 60,
     borderWidth: 1, borderColor: 'rgba(192,132,252,0.2)', borderBottomWidth: 0,
-    maxHeight: '92%', gap: 12,
+    maxHeight: '94%', gap: 12,
+    width: '100%',
   },
   previewHandle: { width: 40, height: 4, backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 2, alignSelf: 'center', marginBottom: 4 },
+  previewHeaderFixed: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', position: 'relative', width: '100%' },
+  previewCloseBtnTop: { position: 'absolute', right: 0, padding: 10 },
   previewTitle: { color: '#C084FC', fontSize: 18, fontWeight: '700', letterSpacing: 1, textAlign: 'center' },
   previewSub: { color: 'rgba(255,255,255,0.4)', fontSize: 12, textAlign: 'center', marginBottom: 4 },
   previewCardWrapper: { alignItems: 'center', borderRadius: 20, overflow: 'hidden' },

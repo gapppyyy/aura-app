@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'react-native';
 import { useAuraContext } from '@/context/AuraContext';
 import { LucideHistory, LucideX } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
@@ -56,6 +57,7 @@ Free for personal, non-commercial use. All rights reserved © 2025 Solaura AI.`;
 
 export default function HookScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { t, i18n: i18nBase } = useTranslation();
   const { triggerHaptic } = useAuraContext();
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
@@ -108,7 +110,7 @@ export default function HookScreen() {
           </MotiView>
 
           {/* Bottom content */}
-          <View style={styles.bottomContent}>
+          <View style={[styles.bottomContent, { paddingBottom: insets.bottom + 10 }]}>
             <MotiText
               from={{ opacity: 0, translateY: 30 }}
               animate={{ opacity: 1, translateY: 0 }}
@@ -180,8 +182,11 @@ export default function HookScreen() {
         onRequestClose={() => setDisclaimerOpen(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setDisclaimerOpen(false)}>
-          <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
+          <Pressable style={[styles.modalCard, { paddingBottom: Math.max(40, insets.bottom + 20) }]} onPress={(e) => e.stopPropagation()}>
+            {/* Handle */}
             <View style={styles.modalHandle} />
+
+            {/* Header */}
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>
                 {sl ? '⚖️ Pogoji uporabe' : '⚖️ Terms of Use'}
@@ -200,7 +205,7 @@ export default function HookScreen() {
             <ScrollView
               style={styles.scrollArea}
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 30 }}
+              contentContainerStyle={{ paddingBottom: 20 }}
             >
               <Text style={styles.disclaimerText}>
                 {sl ? DISCLAIMER_SL : DISCLAIMER_EN}
@@ -274,7 +279,7 @@ const styles = StyleSheet.create({
   },
   bottomContent: {
     position: 'absolute',
-    bottom: 50,
+    bottom: 40,
     left: 24,
     right: 24,
     gap: 16,
@@ -325,8 +330,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 1,
   },
-
-  // Fine print
   finePrintBtn: {
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -340,8 +343,6 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     textDecorationColor: 'rgba(255,255,255,0.15)',
   },
-
-  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.75)',
@@ -358,6 +359,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(212,175,55,0.15)',
     borderBottomWidth: 0,
+    width: '100%',
   },
   modalHandle: {
     width: 40,
@@ -408,7 +410,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   disclaimerText: {
-    color: 'rgba(255,255,255,0.65)',
+    color: '#E0E0E0',
     fontSize: 13,
     lineHeight: 22,
     letterSpacing: 0.2,

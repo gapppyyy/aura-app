@@ -27,9 +27,12 @@ import {
   LucideRefreshCw,
   LucideDownload,
   LucideImage,
+  LucideX,
+  LucideInfo,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuraContext } from '@/context/AuraContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ManifestationCard, CARD_WIDTH, CARD_HEIGHT } from '@/components/ManifestationCard';
 import ViewShot from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';
@@ -46,6 +49,7 @@ const AURA_COLOR_MAP: Record<string, string> = {
 
 export default function ResultsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
   const { result, userData } = useAuraContext();
   const [expandedDesc, setExpandedDesc] = useState(false);
@@ -425,11 +429,16 @@ export default function ResultsScreen() {
         onRequestClose={() => setShowCardPreview(false)}
       >
         <Pressable style={styles.previewOverlay} onPress={() => setShowCardPreview(false)}>
-          <Pressable style={styles.previewSheet} onPress={(e) => e.stopPropagation()}>
+          <Pressable style={[styles.previewSheet, { paddingBottom: Math.max(30, insets.bottom + 20) }]} onPress={(e) => e.stopPropagation()}>
             <View style={styles.previewHandle} />
-            <Text style={styles.previewTitle}>
-              {sl ? '✨ Manifestacijska kartica' : '✨ Manifestation Card'}
-            </Text>
+            <View style={styles.previewHeader}>
+              <Text style={styles.previewTitle}>
+                {sl ? '✨ Manifestacijska kartica' : '✨ Manifestation Card'}
+              </Text>
+              <TouchableOpacity onPress={() => setShowCardPreview(false)} style={styles.previewCloseBtnTop}>
+                <LucideX color="rgba(255,255,255,0.5)" size={24} />
+              </TouchableOpacity>
+            </View>
             <Text style={styles.previewSub}>
               {sl
                 ? 'Shrani in natisni za dnevno manifestacijo'
@@ -999,8 +1008,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(192,132,252,0.2)',
     borderBottomWidth: 0,
-    maxHeight: '92%',
+    maxHeight: '94%',
     gap: 12,
+  },
+  previewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+    position: 'relative',
+    width: '100%',
+  },
+  previewCloseBtnTop: {
+    position: 'absolute',
+    right: 0,
+    padding: 10,
   },
   previewHandle: {
     width: 40,
