@@ -54,8 +54,8 @@ export default function ScanScreen() {
   const totalDuration = 9000;
   const stepDuration = totalDuration / steps.length;
 
-  // Cycle aura color during scan for magical feel
-  const auraColors = [COLORS.secondary, '#9B59B6', '#00F5FF', '#B06EFF', COLORS.secondary];
+  // Electric, cosmic plasma colors matching Kirlian photography references
+  const auraColors = ['#1E90FF', '#8A2BE2', '#9400D3', '#00FCFF', '#1E90FF'];
 
   useEffect(() => {
     if (!permission?.granted) requestPermission();
@@ -134,11 +134,44 @@ export default function ScanScreen() {
       {/* ── MAGICAL AURA EFFECTS ── */}
       <View style={styles.faceFrameCenter} pointerEvents="none">
 
-        {/* Deep background pulsing glow */}
+        {/* Darkening center to make face mysterious and focus on the plasma light */}
         <MotiView
-          from={{ scale: 0.8, opacity: 0.1 }}
-          animate={{ scale: 1.4, opacity: 0.35 }}
-          transition={{ loop: true, type: 'timing', duration: 4000 }}
+          from={{ opacity: 0 }}
+          animate={{ opacity: 0.3 }}
+          transition={{ duration: 2000 }}
+          style={styles.mysticalFaceMask}
+        />
+
+        {/* --- ELECTRIC PLASMA AURAS --- */}
+        {/* Layer 1: Wide electric blue outer wave */}
+        <MotiView
+          from={{ rotate: '0deg', scale: 0.95 }}
+          animate={{ rotate: '360deg', scale: 1.1 }}
+          transition={{ loop: true, type: 'timing', duration: 7000 }}
+          style={[styles.plasmaBlob, { borderColor: '#1E90FF', borderTopLeftRadius: 180, borderBottomRightRadius: 210, opacity: 0.7 }]}
+        />
+        
+        {/* Layer 2: Deep violet counter-rotating energy */}
+        <MotiView
+          from={{ rotate: '360deg', scale: 1.05 }}
+          animate={{ rotate: '0deg', scale: 1 }}
+          transition={{ loop: true, type: 'timing', duration: 5500 }}
+          style={[styles.plasmaBlob, { borderColor: '#8A2BE2', borderTopRightRadius: 150, borderBottomLeftRadius: 190, opacity: 0.85 }]}
+        />
+
+        {/* Layer 3: Cyan fast inner ripple */}
+        <MotiView
+          from={{ rotate: '0deg', scale: 0.9 }}
+          animate={{ rotate: '360deg', scale: 1.05 }}
+          transition={{ loop: true, type: 'timing', duration: 3500 }}
+          style={[styles.plasmaBlob, { borderColor: '#00FCFF', borderTopLeftRadius: 120, borderBottomLeftRadius: 170, opacity: 0.6 }]}
+        />
+
+        {/* Layer 4: Soft background cosmic blooming */}
+        <MotiView
+          from={{ scale: 0.8, opacity: 0.2 }}
+          animate={{ scale: 1.5, opacity: 0.6 }}
+          transition={{ loop: true, type: 'timing', duration: 3000, repeatReverse: true }}
           style={[styles.auraGlowLayer, { backgroundColor: scanColor }]}
         />
 
@@ -177,12 +210,12 @@ export default function ScanScreen() {
           />
         ))}
 
-        {/* Subtle breathing ring to frame the face gently */}
+        {/* High intensity focal ring simulating energy connection */}
         <MotiView
-          from={{ scale: 1, opacity: 0 }}
-          animate={{ scale: 1.2, opacity: 0.15 }}
-          transition={{ loop: true, type: 'timing', duration: 3000 }}
-          style={[styles.etherealRing, { borderColor: scanColor }]}
+          from={{ scale: 0.95, opacity: 0.3 }}
+          animate={{ scale: 1.05, opacity: 0.9 }}
+          transition={{ loop: true, type: 'timing', duration: 2000, repeatReverse: true }}
+          style={[styles.etherealRing, { borderColor: scanColor, shadowColor: scanColor }]}
         />
       </View>
 
@@ -245,7 +278,7 @@ const styles = StyleSheet.create({
   },
   darkOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(8, 2, 22, 0.72)',
+    backgroundColor: 'rgba(5, 0, 15, 0.85)', // Very dark to make neon true-plasma pop
   },
   closeBtn: {
     position: 'absolute',
@@ -269,26 +302,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  mysticalFaceMask: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderRadius: FACE_W,
+  },
+  plasmaBlob: {
+    position: 'absolute',
+    width: FACE_W * 1.3,
+    height: FACE_H * 1.2,
+    borderWidth: 10,
+    borderRadius: 150,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 35,
+    elevation: 20, // High elevation for intense android glow
+  },
   auraGlowLayer: {
     position: 'absolute',
-    width: FACE_W * 1.6,
-    height: FACE_H * 1.6,
-    borderRadius: (FACE_W * 1.6) / 2,
-    opacity: 0.2,
+    width: FACE_W * 1.4,
+    height: FACE_H * 1.4,
+    borderRadius: (FACE_W * 1.4) / 2,
+    opacity: 0.3,
   },
   auraGlowCore: {
     position: 'absolute',
-    width: FACE_W,
-    height: FACE_H,
-    borderRadius: FACE_W / 2,
-    opacity: 0.4,
+    width: FACE_W * 1.1,
+    height: FACE_H * 1.1,
+    borderRadius: (FACE_W * 1.1) / 2,
+    opacity: 0.6,
   },
   etherealRing: {
     position: 'absolute',
-    width: FACE_W + 20,
-    height: FACE_H + 20,
-    borderRadius: (FACE_W + 20) / 2,
-    borderWidth: 2,
+    width: FACE_W + 10,
+    height: FACE_H + 30,
+    borderRadius: (FACE_W + 10) / 2,
+    borderWidth: 3,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 15,
   },
   energyParticle: {
     position: 'absolute',

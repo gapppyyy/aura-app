@@ -245,9 +245,16 @@ export default function HistoryScreen() {
 
             <Text style={styles.previewSub}>{sl ? 'Shrani in natisni za dnevno manifestacijo' : 'Save and print for daily manifestation'}</Text>
             
-            <View style={styles.previewCardWrapper}>
-              {selected && <ManifestationCard result={selected} userData={selected.userData} language={i18n.language} />}
-            </View>
+            {/* Card preview wrapped in ScrollView to prevent overflow on small screens */}
+            <ScrollView 
+              style={{ flexShrink: 1, width: '100%', marginVertical: 12 }}
+              contentContainerStyle={{ alignItems: 'center', paddingVertical: 10 }}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.previewCardWrapper}>
+                {selected && <ManifestationCard result={selected} userData={selected.userData} language={i18n.language} />}
+              </View>
+            </ScrollView>
             
             <TouchableOpacity onPress={handleSaveCard} disabled={saving} style={styles.saveCardBtn}>
               <LinearGradient
@@ -357,7 +364,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0E0720', borderTopLeftRadius: 36, borderTopRightRadius: 36,
     paddingHorizontal: 20, paddingTop: 16, paddingBottom: 60,
     borderWidth: 1, borderColor: 'rgba(192,132,252,0.2)', borderBottomWidth: 0,
-    maxHeight: '94%', gap: 12,
+    maxHeight: '94%',
     width: '100%',
   },
   previewHandle: { width: 40, height: 4, backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 2, alignSelf: 'center', marginBottom: 4 },

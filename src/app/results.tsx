@@ -445,16 +445,22 @@ export default function ResultsScreen() {
                 : 'Save and print for daily manifestation'}
             </Text>
 
-            {/* Card preview */}
-            <View style={styles.previewCardWrapper}>
-              {result && (
-                <ManifestationCard
-                  result={result}
-                  userData={result.userData || (userData || undefined)}
-                  language={i18n.language}
-                />
-              )}
-            </View>
+            {/* Card preview wrapped in ScrollView to prevent overflow on small screens */}
+            <ScrollView 
+              style={{ flexShrink: 1, width: '100%', marginVertical: 12 }}
+              contentContainerStyle={{ alignItems: 'center', paddingVertical: 10 }}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.previewCardWrapper}>
+                {result && (
+                  <ManifestationCard
+                    result={result}
+                    userData={result.userData || (userData || undefined)}
+                    language={i18n.language}
+                  />
+                )}
+              </View>
+            </ScrollView>
 
             {/* Actions */}
             <TouchableOpacity
@@ -1009,7 +1015,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(192,132,252,0.2)',
     borderBottomWidth: 0,
     maxHeight: '94%',
-    gap: 12,
   },
   previewHeader: {
     flexDirection: 'row',
