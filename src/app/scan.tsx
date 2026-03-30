@@ -14,33 +14,30 @@ const FACE_H = 290;
 
 const SCAN_STEPS_SL = [
   'Vzpostavljam vez z dušo...',
-  'Analiziram energijske vzorce obraza...',
-  'Preračunavam karmično resonanco...',
-  'Kartiranje duhovnih časovnic...',
-  'Stabilizacija astralnih scenarijev...',
-  'Sinteza duhovnega profila...',
+  'Berem tvojo svetlobno frekvenco...',
+  'Zaznavam prvo plast avre...',
+  'Odpiram energetske poti...',
+  'Sinhroniziram karmično resonanco...',
+  'Materializiram duhovni pečat...',
 ];
 
 const SCAN_STEPS_EN = [
   'Establishing soul connection...',
-  'Analysing facial energy patterns...',
-  'Calculating karmic resonance...',
-  'Mapping spiritual timelines...',
-  'Stabilising astral scenarios...',
-  'Synthesising spiritual profile...',
+  'Reading your light frequency...',
+  'Sensing the primary aura layer...',
+  'Opening energetic pathways...',
+  'Synchronising karmic resonance...',
+  'Materialising spiritual imprint...',
 ];
 
-// Simulated energy burst points around the face
-const ENERGY_PARTICLES = [
-  { top: 0.08, left: 0.15, delay: 0 },
-  { top: 0.05, left: 0.55, delay: 300 },
-  { top: 0.25, left: 0.92, delay: 600 },
-  { top: 0.55, left: 0.95, delay: 200 },
-  { top: 0.82, left: 0.78, delay: 900 },
-  { top: 0.88, left: 0.38, delay: 400 },
-  { top: 0.72, left: 0.04, delay: 700 },
-  { top: 0.38, left: 0.02, delay: 100 },
-];
+// Magical floating energy particles
+const ENERGY_PARTICLES = Array.from({ length: 15 }).map((_, i) => ({
+  top: Math.random() * 1.2 - 0.1,  // spread wider
+  left: Math.random() * 1.2 - 0.1,
+  delay: Math.random() * 2000,
+  duration: 3000 + Math.random() * 3000,
+  scale: 0.5 + Math.random() * 1.5,
+}));
 
 export default function ScanScreen() {
   const router = useRouter();
@@ -134,71 +131,35 @@ export default function ScanScreen() {
         <LucideX color="rgba(255,255,255,0.7)" size={24} />
       </TouchableOpacity>
 
-      {/* ── FACE FRAME CENTER ── */}
-      <View style={styles.faceFrameCenter}>
+      {/* ── MAGICAL AURA EFFECTS ── */}
+      <View style={styles.faceFrameCenter} pointerEvents="none">
 
-        {/* Outer spinning ring */}
+        {/* Deep background pulsing glow */}
         <MotiView
-          from={{ rotate: '0deg' }}
-          animate={{ rotate: '360deg' }}
-          transition={{ loop: true, type: 'timing', duration: 6000, repeatReverse: false }}
-          style={[styles.spinRingOuter, { borderColor: `${scanColor}40` }]}
+          from={{ scale: 0.8, opacity: 0.1 }}
+          animate={{ scale: 1.4, opacity: 0.35 }}
+          transition={{ loop: true, type: 'timing', duration: 4000 }}
+          style={[styles.auraGlowLayer, { backgroundColor: scanColor }]}
         />
 
-        {/* Middle pulsing ring */}
+        {/* Inner intense glowing core */}
         <MotiView
-          from={{ scale: 0.92, opacity: 0.4 }}
-          animate={{ scale: 1.04, opacity: 0.9 }}
-          transition={{ loop: true, type: 'timing', duration: 1600 }}
-          style={[styles.pulseRingMid, { borderColor: scanColor }]}
+          from={{ scale: 0.9, opacity: 0.2 }}
+          animate={{ scale: 1.15, opacity: 0.5 }}
+          transition={{ loop: true, type: 'timing', duration: 2500 }}
+          style={[styles.auraGlowCore, { backgroundColor: scanColor }]}
         />
 
-        {/* Inner counter-spin */}
-        <MotiView
-          from={{ rotate: '0deg' }}
-          animate={{ rotate: '-360deg' }}
-          transition={{ loop: true, type: 'timing', duration: 4000, repeatReverse: false }}
-          style={[styles.spinRingInner, { borderColor: `${scanColor}88` }]}
-        />
-
-        {/* Face oval guide */}
-        <MotiView
-          from={{ opacity: 0.5 }}
-          animate={{ opacity: 1.0 }}
-          transition={{ loop: true, type: 'timing', duration: 1200 }}
-          style={[styles.faceOval, { borderColor: scanColor }]}
-        />
-
-        {/* Scanning laser line */}
-        <View style={styles.scanLineClip}>
-          <MotiView
-            from={{ translateY: -FACE_H / 2 }}
-            animate={{ translateY: FACE_H / 2 }}
-            transition={{ loop: true, type: 'timing', duration: 1800 }}
-            style={[styles.scanLine, { backgroundColor: scanColor, shadowColor: scanColor }]}
-          />
-        </View>
-
-        {/* Corner brackets */}
-        {[
-          { top: 0, left: 0, borderRightWidth: 0, borderBottomWidth: 0, borderTopLeftRadius: 20 },
-          { top: 0, right: 0, borderLeftWidth: 0, borderBottomWidth: 0, borderTopRightRadius: 20 },
-          { bottom: 0, left: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomLeftRadius: 20 },
-          { bottom: 0, right: 0, borderLeftWidth: 0, borderTopWidth: 0, borderBottomRightRadius: 20 },
-        ].map((style, i) => (
-          <View key={i} style={[styles.corner, { borderColor: scanColor }, style]} />
-        ))}
-
-        {/* Energy particles orbiting around face */}
+        {/* Floating ethereal energy particles */}
         {ENERGY_PARTICLES.map((p, i) => (
           <MotiView
             key={i}
-            from={{ opacity: 0, scale: 0.4 }}
-            animate={{ opacity: [0, 1, 0], scale: [0.4, 1.2, 0.4] }}
+            from={{ opacity: 0, translateY: 40, scale: p.scale * 0.5 }}
+            animate={{ opacity: [0, 0.8, 0], translateY: -100, scale: [p.scale * 0.5, p.scale, p.scale * 0.2] }}
             transition={{
               loop: true,
               type: 'timing',
-              duration: 1400 + i * 200,
+              duration: p.duration,
               delay: p.delay,
             }}
             style={[
@@ -206,18 +167,22 @@ export default function ScanScreen() {
               {
                 top: `${p.top * 100}%`,
                 left: `${p.left * 100}%`,
-                backgroundColor: i % 3 === 0 ? scanColor : i % 3 === 1 ? '#9B59B6' : '#00F5FF',
+                backgroundColor: i % 3 === 0 ? '#FFF' : i % 2 === 0 ? scanColor : '#FFD700',
+                shadowColor: scanColor,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 1,
+                shadowRadius: 10,
               },
             ]}
           />
         ))}
 
-        {/* Aura glow behind face */}
+        {/* Subtle breathing ring to frame the face gently */}
         <MotiView
-          from={{ opacity: 0.2, scale: 0.9 }}
-          animate={{ opacity: 0.5, scale: 1.06 }}
-          transition={{ loop: true, type: 'timing', duration: 2000 }}
-          style={[styles.auraGlow, { backgroundColor: scanColor }]}
+          from={{ scale: 1, opacity: 0 }}
+          animate={{ scale: 1.2, opacity: 0.15 }}
+          transition={{ loop: true, type: 'timing', duration: 3000 }}
+          style={[styles.etherealRing, { borderColor: scanColor }]}
         />
       </View>
 
@@ -256,18 +221,11 @@ export default function ScanScreen() {
             ))}
           </View>
 
-          {/* Progress bar */}
-          <View style={styles.progressTrack}>
-            <MotiView
-              animate={{ width: `${progress}%` }}
-              transition={{ type: 'timing', duration: 180 }}
-              style={[styles.progressFill, { backgroundColor: scanColor, shadowColor: scanColor }]}
-            />
-          </View>
-
           <View style={styles.progressRow}>
-            <Text style={styles.progressLabel}>{i18n.language === 'sl' ? 'Analiza' : 'Analysis'}</Text>
-            <Text style={[styles.progressPercent, { color: scanColor }]}>{Math.round(progress)}%</Text>
+            <Text style={styles.progressLabel}>{i18n.language === 'sl' ? 'Duhovna faza' : 'Spiritual Phase'}</Text>
+            <Text style={[styles.progressPercent, { color: scanColor }]}>
+              {stepIndex + 1} / {steps.length}
+            </Text>
           </View>
         </MotiView>
       </View>
@@ -311,69 +269,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  spinRingOuter: {
+  auraGlowLayer: {
     position: 'absolute',
-    width: FACE_W + 80,
-    height: FACE_H + 80,
-    borderRadius: (FACE_W + 80) / 2,
-    borderWidth: 1,
-    borderStyle: 'dashed',
+    width: FACE_W * 1.6,
+    height: FACE_H * 1.6,
+    borderRadius: (FACE_W * 1.6) / 2,
+    opacity: 0.2,
   },
-  pulseRingMid: {
-    position: 'absolute',
-    width: FACE_W + 44,
-    height: FACE_H + 44,
-    borderRadius: (FACE_W + 44) / 2,
-    borderWidth: 1.5,
-  },
-  spinRingInner: {
-    position: 'absolute',
-    width: FACE_W + 20,
-    height: FACE_H + 20,
-    borderRadius: (FACE_W + 20) / 2,
-    borderWidth: 1,
-    borderStyle: 'dotted',
-  },
-  faceOval: {
+  auraGlowCore: {
     position: 'absolute',
     width: FACE_W,
     height: FACE_H,
     borderRadius: FACE_W / 2,
+    opacity: 0.4,
+  },
+  etherealRing: {
+    position: 'absolute',
+    width: FACE_W + 20,
+    height: FACE_H + 20,
+    borderRadius: (FACE_W + 20) / 2,
     borderWidth: 2,
-  },
-  scanLineClip: {
-    position: 'absolute',
-    width: FACE_W - 10,
-    height: FACE_H,
-    overflow: 'hidden',
-    borderRadius: FACE_W / 2,
-  },
-  scanLine: {
-    width: '100%',
-    height: 2,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    opacity: 0.9,
-  },
-  corner: {
-    position: 'absolute',
-    width: 24,
-    height: 24,
-    borderWidth: 2.5,
   },
   energyParticle: {
     position: 'absolute',
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  auraGlow: {
-    position: 'absolute',
-    width: FACE_W - 30,
-    height: FACE_H - 30,
-    borderRadius: FACE_W / 2,
-    opacity: 0.08,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
   },
 
   // Footer
@@ -414,34 +335,22 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
   },
-  progressTrack: {
-    width: '100%',
-    height: 3,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderRadius: 2,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 2,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-  },
   progressRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
   },
   progressLabel: {
-    color: 'rgba(255,255,255,0.35)',
-    fontSize: 11,
-    letterSpacing: 1.5,
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 12,
+    letterSpacing: 2,
     textTransform: 'uppercase',
+    fontWeight: '500',
   },
   progressPercent: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '800',
-    letterSpacing: 1,
+    letterSpacing: 2,
   },
 });
