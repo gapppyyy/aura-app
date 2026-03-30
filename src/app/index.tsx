@@ -177,12 +177,17 @@ export default function HookScreen() {
       {/* ── DISCLAIMER MODAL ── */}
       <Modal
         visible={disclaimerOpen}
-        transparent
+        transparent={true}
         animationType="slide"
         onRequestClose={() => setDisclaimerOpen(false)}
       >
-        <Pressable style={styles.modalOverlay} onPress={() => setDisclaimerOpen(false)}>
-          <Pressable style={[styles.modalCard, { paddingBottom: Math.max(80, insets.bottom + 40) }]} onPress={(e) => e.stopPropagation()}>
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity 
+            style={StyleSheet.absoluteFillObject} 
+            activeOpacity={1} 
+            onPress={() => setDisclaimerOpen(false)} 
+          />
+          <View style={[styles.modalCard, { paddingBottom: Math.max(80, (insets?.bottom || 0) + 40) }]}>
             {/* Handle */}
             <View style={styles.modalHandle} />
 
@@ -220,8 +225,8 @@ export default function HookScreen() {
                 {sl ? 'Potrjujem in soglašam ✓' : 'Confirm & Agree ✓'}
               </Text>
             </TouchableOpacity>
-          </Pressable>
-        </Pressable>
+          </View>
+        </View>
       </Modal>
     </>
   );
@@ -406,7 +411,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   scrollArea: {
-    flex: 1,
+    flexShrink: 1,
     marginBottom: 16,
   },
   disclaimerText: {
