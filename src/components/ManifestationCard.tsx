@@ -134,7 +134,12 @@ export const ManifestationCard = React.forwardRef<View, Props>(
                 <Text style={[styles.userTagLabel, { color: `${theme.primary}60` }]}>
                   {sl ? 'Fokus' : 'Focus'}
                 </Text>
-                <Text style={[styles.userTagValue, { color: '#FFF' }]}>{userData.focus}</Text>
+                <Text style={[styles.userTagValue, { color: '#FFF' }]}>
+                  {sl ? 
+                    ({ 'money': 'Finance', 'love': 'Ljubezen', 'career': 'Uspeh', 'health': 'Zdravje', 'spirit': 'Duhovnost' }[userData.focus] || userData.focus) 
+                    : userData.focus
+                  }
+                </Text>
               </View>
             )}
             {userData.goal && (

@@ -46,9 +46,25 @@ RULES:
 - face_reading: Interpret ONLY what you see in the face — expression, energy, tension, openness.
 - GENDER: Use appropriate pronouns based on user profiles.`
 
+  const focusMap: Record<string, string> = isSlove ? {
+    money: 'finance in obilje',
+    love: 'ljubezen in odnosi',
+    career: 'kariera in uspeh',
+    health: 'zdravje in vitalnost',
+    spirit: 'duhovnost in mir'
+  } : {
+    money: 'money and abundance',
+    love: 'love and relationships',
+    career: 'career and success',
+    health: 'health and vitality',
+    spirit: 'spirituality and peace'
+  };
+
+  const translatedFocus = focusMap[userData.focus] || userData.focus;
+
   const textContent = `USER PROFILE:
 - Age: ${userData.age} years
-- Life Focus Area: ${userData.focus}
+- Life Focus Area: ${translatedFocus}
 - Future Manifestation Goal: ${userData.goal}
 - Gender: ${userData.gender}
 - Current Mood: ${userData.mood || 'Neutral'}
@@ -82,7 +98,9 @@ Return ONLY valid JSON:
   "evolution_state": "${isSlove ? 'Duhovno stanje v 3 besedah' : 'Spiritual state in 3 words'}",
   "scenarios": {
     "current": "${isSlove ? '2-3 stavki o sedanji poti' : '2-3 sentences about current path'}",
-    "optimized": "${isSlove ? 'Bodi izjemno konkreten in manifestacijski. 2-3 stavki o IDEALNI POTI, ki so krepki, vzpodbudni in zvenijo kot močna afirmacija.' : 'Be extremely specific and manifestational. 2-3 sentences about the IDEAL PATH that are bold, encouraging, and sound like a powerful affirmation.'}",
+    "optimized": "${isSlove 
+      ? 'Bodi IZJEMNO KONKRETEN. 1. Jasen korak/navodilo. 2. KRATEK RITUAL (npr. zjutraj naredi X). 3. MOČNA AFIRMACIJA v narekovajih. Vse v 3-4 stavkih.' 
+      : 'Be EXTREMELY CONCRETE. 1. Clear step/instruction. 2. SHORT RITUAL (e.g. morning action). 3. POWERFUL AFFIRMATION in quotes. All in 3-4 sentences.'}",
     "risk": "${isSlove ? 'Karmična nevarnost ali blokada v 2 stavkih' : 'Karmic danger or blockage in 2 sentences'}"
   }
 }`;

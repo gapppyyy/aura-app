@@ -429,7 +429,7 @@ export default function ResultsScreen() {
         onRequestClose={() => setShowCardPreview(false)}
       >
         <Pressable style={styles.previewOverlay} onPress={() => setShowCardPreview(false)}>
-          <Pressable style={[styles.previewSheet, { paddingBottom: Math.max(30, insets.bottom + 20) }]} onPress={(e) => e.stopPropagation()}>
+          <Pressable style={[styles.previewSheet, { paddingBottom: Math.max(80, insets.bottom + 40) }]} onPress={(e) => e.stopPropagation()}>
             <View style={styles.previewHandle} />
             <View style={styles.previewHeader}>
               <Text style={styles.previewTitle}>

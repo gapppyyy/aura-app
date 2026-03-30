@@ -182,7 +182,7 @@ export default function HookScreen() {
         onRequestClose={() => setDisclaimerOpen(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setDisclaimerOpen(false)}>
-          <Pressable style={[styles.modalCard, { paddingBottom: Math.max(40, insets.bottom + 20) }]} onPress={(e) => e.stopPropagation()}>
+          <Pressable style={[styles.modalCard, { paddingBottom: Math.max(80, insets.bottom + 40) }]} onPress={(e) => e.stopPropagation()}>
             {/* Handle */}
             <View style={styles.modalHandle} />
 
