@@ -8,6 +8,7 @@ import { useAuraContext } from '@/context/AuraContext';
 import { LucideChevronLeft, LucideStar } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import { ZODIAC_SIGNS } from '@/utils/astrology';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
@@ -29,6 +30,7 @@ const ASTROMAP: Record<string, { sl: string, en: string, color: string }> = {
 
 export default function CosmosScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
   const { userData, triggerHaptic } = useAuraContext();
   
@@ -37,7 +39,7 @@ export default function CosmosScreen() {
   if (!userData || !userData.zodiacSignId) {
     return (
       <AuraBackground>
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: Math.max(60, insets.top + 10) }]}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
             <LucideChevronLeft color="#FFF" size={28} />
           </TouchableOpacity>
@@ -61,7 +63,7 @@ export default function CosmosScreen() {
 
   return (
     <AuraBackground>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: Math.max(60, insets.top + 10) }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <LucideChevronLeft color="#FFF" size={28} />
         </TouchableOpacity>
@@ -116,7 +118,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 60,
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
