@@ -24,6 +24,8 @@ import {
   LucideSun,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { getZodiacSign } from '@/utils/astrology';
 
 const { width } = Dimensions.get('window');
 
@@ -35,7 +37,9 @@ export default function OnboardingScreen() {
   const { setUserData, triggerHaptic } = useAuraContext();
   const [step, setStep] = useState(STEPS.VALUE);
   const [permission, requestPermission] = useCameraPermissions();
-  const [age, setAge] = useState('');
+  const [name, setName] = useState('');
+  const [birthDate, setBirthDate] = useState(new Date(1995, 0, 1));
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [gender, setGender] = useState<any>(null);
   const [focus, setFocus] = useState('');
   const [goal, setGoal] = useState('');
@@ -52,7 +56,16 @@ export default function OnboardingScreen() {
         setStep(STEPS.INPUT);
       }
     } else {
-      setUserData({ age, focus, mood: 'Neutral', goal, gender });
+      const zodiac = getZodiacSign(birthDate);
+      setUserData({ 
+        name, 
+        birthDate: birthDate.toISOString(),
+        zodiacSignId: zodiac.id,
+        focus, 
+        mood: 'Neutral', 
+        goal, 
+        gender 
+      });
       router.push('/scan');
     }
   };
@@ -134,18 +147,51 @@ export default function OnboardingScreen() {
           animate={{ opacity: 1, translateY: 0 }}
           style={styles.inputForm}
         >
-          {/* Age */}
+          {/* Name */}
           <View style={styles.inputGroup}>
-            <Text style={styles.inputTitle}>{t('input_age')}</Text>
+            <Text style={styles.inputTitle}>{t('input_name')}</Text>
             <TextInput
               style={styles.input}
-              placeholder="npr. 28"
+              placeholder="npr. Luna"
               placeholderTextColor="rgba(255,255,255,0.25)"
-              keyboardType="numeric"
-              value={age}
-              onChangeText={setAge}
+              value={name}
+              onChangeText={setName}
               returnKeyType="done"
             />
+          </View>
+
+          {/* Birth Date */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputTitle}>{t('input_birthdate')}</Text>
+            {Platform.OS === 'android' ? (
+              <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
+                <Text style={{ color: '#FFF', fontSize: 16 }}>{birthDate.toLocaleDateString()}</Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={[styles.input, { paddingVertical: 10, alignItems: 'flex-start' }]}>
+                <DateTimePicker
+                  value={birthDate}
+                  mode="date"
+                  display="default"
+                  themeVariant="dark"
+                  onChange={(event, date) => {
+                    if (date) setBirthDate(date);
+                  }}
+                />
+              </View>
+            )}
+            
+            {showDatePicker && Platform.OS === 'android' && (
+              <DateTimePicker
+                value={birthDate}
+                mode="date"
+                display="default"
+                onChange={(event, date) => {
+                  setShowDatePicker(false);
+                  if (date) setBirthDate(date);
+                }}
+              />
+            )}
           </View>
 
           {/* Gender */}
@@ -222,9 +268,9 @@ export default function OnboardingScreen() {
 
           {/* Submit */}
           <TouchableOpacity
-            style={[styles.nextBtnWrapper, { opacity: (age && focus && goal && gender) ? 1 : 0.4, marginBottom: 20 }]}
+            style={[styles.nextBtnWrapper, { opacity: (name && name.length >= 2 && focus && goal && gender) ? 1 : 0.4, marginBottom: 20 }]}
             onPress={handleNext}
-            disabled={!(age && focus && goal && gender)}
+            disabled={!(name && name.length >= 2 && focus && goal && gender)}
           >
             <LinearGradient
               colors={['#BF953F', '#FCF6BA', '#AA771C']}

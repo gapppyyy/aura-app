@@ -5,7 +5,9 @@ import * as Haptics from 'expo-haptics';
 export type UserGender = 'male' | 'female' | 'other';
 
 export type UserData = {
-  age: string;
+  name: string;
+  birthDate: string; // ISO string
+  zodiacSignId?: string;
   gender: UserGender;
   focus: string;
   mood: string;

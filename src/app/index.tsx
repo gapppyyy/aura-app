@@ -8,7 +8,7 @@ import { COLORS } from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'react-native';
 import { useAuraContext } from '@/context/AuraContext';
-import { LucideHistory, LucideX } from 'lucide-react-native';
+import { LucideHistory, LucideX, LucideSparkles } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
@@ -142,13 +142,23 @@ export default function HookScreen() {
               </TouchableOpacity>
             </MotiView>
 
-            {/* History - secondary link below CTA */}
+            {/* Secondary links below CTA */}
             <MotiView
               from={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ type: 'timing', delay: 1600 }}
               style={styles.historyRow}
             >
+              <TouchableOpacity
+                onPress={() => { triggerHaptic('light'); router.push('/cosmos'); }}
+                style={styles.historyBtn}
+              >
+                <LucideSparkles color={COLORS.secondary} size={16} />
+                <Text style={styles.historyText}>{sl ? 'Kozmos' : 'Cosmos'}</Text>
+              </TouchableOpacity>
+
+              <View style={{ width: 1, height: 20, backgroundColor: 'rgba(255,255,255,0.2)', marginHorizontal: 20 }} />
+
               <TouchableOpacity
                 onPress={() => { triggerHaptic('light'); router.push('/history'); }}
                 style={styles.historyBtn}

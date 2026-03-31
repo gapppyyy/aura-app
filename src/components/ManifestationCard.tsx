@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AuraReading } from '@/context/AuraContext';
+import { ZODIAC_SIGNS } from '@/utils/astrology';
 
 const { width } = Dimensions.get('window');
 export const CARD_WIDTH = width - 32;
@@ -28,7 +29,7 @@ const STAR_POSITIONS = [
 
 interface Props {
   result: AuraReading;
-  userData?: { age?: string; focus?: string; goal?: string };
+  userData?: { name?: string; birthDate?: string; zodiacSignId?: string; age?: string; focus?: string; goal?: string };
   language?: string;
 }
 
@@ -44,6 +45,7 @@ export const ManifestationCard = React.forwardRef<View, Props>(
 
     // Short optimized path for manifestation (most important)
     const manifestText = result.scenarios?.optimized || result.description?.slice(0, 180);
+    const userZodiac = userData?.zodiacSignId ? ZODIAC_SIGNS.find(z => z.id === userData.zodiacSignId) : null;
 
     return (
       <View ref={ref} style={[styles.card, { width: CARD_WIDTH, height: CARD_HEIGHT }]} collapsable={false}>
@@ -83,6 +85,13 @@ export const ManifestationCard = React.forwardRef<View, Props>(
             {sl ? 'Manifestacijska kartica' : 'Manifestation Card'}
           </Text>
         </View>
+
+        {/* Astro Badge */}
+        {userZodiac && (
+          <View style={styles.astroBadge}>
+            <Text style={styles.astroEmoji}>{userZodiac.emoji}</Text>
+          </View>
+        )}
 
         {/* Aura orb */}
         <View style={styles.orbSection}>
@@ -229,6 +238,22 @@ const styles = StyleSheet.create({
     fontSize: 10,
     letterSpacing: 3,
     marginTop: 3,
+  },
+  astroBadge: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  astroEmoji: {
+    fontSize: 18,
   },
   orbSection: {
     alignItems: 'center',

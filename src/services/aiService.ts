@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ZODIAC_SIGNS } from '@/utils/astrology';
 
 const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
@@ -44,7 +45,12 @@ RULES:
 - scenarios.optimized: Exact path to the best possible future.
 - scenarios.risk: Karmic danger awaiting if they don't act.
 - face_reading: Interpret ONLY what you see in the face — expression, energy, tension, openness.
+- ASTROLOGY: You MUST weave their Astrological Zodiac identity deeply into the analysis. Explain how their Aura color relates to their Sun Sign element.
 - GENDER: Use appropriate pronouns based on user profiles.`
+
+  const userZodiac = ZODIAC_SIGNS.find(z => z.id === userData.zodiacSignId) || ZODIAC_SIGNS[0];
+  const translatedZodiac = isSlove ? userZodiac.sl : userZodiac.en;
+  const translatedElement = isSlove ? userZodiac.element : userZodiac.element === 'ognjeno' ? 'fire' : userZodiac.element === 'vodno' ? 'water' : userZodiac.element === 'zračno' ? 'air' : 'earth';
 
   const focusMap: Record<string, string> = isSlove ? {
     money: 'finance in obilje',
@@ -63,7 +69,9 @@ RULES:
   const translatedFocus = focusMap[userData.focus] || userData.focus;
 
   const textContent = `USER PROFILE:
-- Age: ${userData.age} years
+- Name: ${userData.name}
+- Zodiac Sign: ${translatedZodiac} (${translatedElement} element)
+- Age/BirthDate: ${userData.birthDate}
 - Life Focus Area: ${translatedFocus}
 - Future Manifestation Goal: ${userData.goal}
 - Gender: ${userData.gender}
@@ -90,10 +98,10 @@ INSTRUCTIONS:
 
 Return ONLY valid JSON:
 {
-  "color": "indigo | jade | ruby | gold | violet",
+  "color": "indigo | jade | ruby | gold | violet | cosmic blue | solar orange",
   "title": "Short poetic mystical aura title (max 8 words)",
   "face_reading": "${isSlove ? '2-3 stavki — kaj si videl/a SAMO na obrazu: napetost, energija, odprtost, svetloba.' : '2-3 sentences — what you saw ONLY in the face: tension, energy, openness, light.'}",
-  "description": "${isSlove ? '4-5 bogatih odstavkov globoke osebne duhovne analize v slovenščini.' : '4-5 rich paragraphs of deep personal spiritual analysis in English.'}",
+  "description": "${isSlove ? '4-5 bogatih odstavkov globoke osebne duhovne in ASTROLOŠKE analize. Obvezno poveži njihovo zodiakalno znamenje in avro.' : '4-5 rich paragraphs of deep personal spiritual and ASTROLOGICAL analysis. You must connect their zodiac sign to their current aura.'}",
   "resonance": <integer 62–97>,
   "evolution_state": "${isSlove ? 'Duhovno stanje v 3 besedah' : 'Spiritual state in 3 words'}",
   "scenarios": {
