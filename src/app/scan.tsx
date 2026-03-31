@@ -8,6 +8,7 @@ import { MotiView, AnimatePresence } from 'moti';
 import { COLORS } from '@/constants/theme';
 import { LucideX } from 'lucide-react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
+import { Audio } from 'expo-av';
 
 const { width, height } = Dimensions.get('window');
 
@@ -50,6 +51,27 @@ export default function ScanScreen() {
   }, [permission]);
 
   useEffect(() => {
+    let soundObj: Audio.Sound | null = null;
+    let isMounted = true;
+
+    async function playMagicalSound() {
+      try {
+        // Play the provided physical sound effect
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/scan_sound.wav')
+        );
+        if (!isMounted) {
+          sound.unloadAsync();
+          return;
+        }
+        soundObj = sound;
+        await sound.playAsync();
+      } catch (error) {
+        console.warn('Could not play magical aura sound:', error);
+      }
+    }
+    playMagicalSound();
+
     // Phase and text logic driven by precise timing
     const timers: NodeJS.Timeout[] = [];
     
@@ -84,7 +106,11 @@ export default function ScanScreen() {
     timers.push(navTimer);
 
     return () => {
+      isMounted = false;
       timers.forEach(clearTimeout);
+      if (soundObj) {
+        soundObj.stopAsync().then(() => soundObj!.unloadAsync()).catch(() => {});
+      }
     };
   }, []);
 
