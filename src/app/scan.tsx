@@ -9,6 +9,7 @@ import { COLORS } from '@/constants/theme';
 import { LucideX } from 'lucide-react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { useAudioPlayer } from 'expo-audio';
+import { Easing } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
 
@@ -135,7 +136,7 @@ export default function ScanScreen() {
       {/* 2. AURA LAYER: Soft blur radial gradient (Green -> Yellow -> Purple) */}
       <MotiView
         animate={{ opacity: auraOpacity, scale: auraScale }}
-        transition={{ type: 'timing', duration: 2500, easing: (t) => t }} // smooth slow transition
+        transition={{ type: 'timing', duration: 2500, easing: Easing.linear }} // removed invalid JS closure
         style={StyleSheet.absoluteFillObject}
         pointerEvents="none"
       >
