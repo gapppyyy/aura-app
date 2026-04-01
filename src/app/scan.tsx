@@ -44,7 +44,7 @@ export default function ScanScreen() {
   const [scanColor, setScanColor] = useState(COLORS.secondary);
   const [photoTaken, setPhotoTaken] = useState(false);
   const cameraRef = useRef<any>(null);
-  const player = useAudioPlayer(require('../../assets/sounds/scan_sound.wav'));
+  const player = useAudioPlayer(require('../../assets/sounds/scan_sound.m4a'));
   const status = useAudioPlayerStatus(player);
 
   const steps = MAGICAL_STEPS;
