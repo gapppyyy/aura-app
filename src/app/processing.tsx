@@ -18,7 +18,13 @@ export default function ProcessingScreen() {
   const { t, i18n } = useTranslation();
   const { userData, setResult, triggerHaptic, capturedImageBase64, setCapturedImageBase64, history } = useAuraContext();
   const [stepIndex, setStepIndex] = useState(0);
-  const steps = t('scan_steps', { returnObjects: true }) as string[];
+  const [isAiDone, setIsAiDone] = useState(false);
+  const isAiDoneRef = React.useRef(false);
+  const [areStepsDone, setAreStepsDone] = useState(false);
+
+  const baseSteps = t('scan_steps', { returnObjects: true }) as string[];
+  // If AI takes longer, we append a final loading message
+  const steps = [...baseSteps, i18n.language.startsWith('sl') ? 'Branje avre se zaključuje...' : 'Finalizing cosmic layout...'];
 
   useEffect(() => {
     const fetchAIResult = async () => {
@@ -47,6 +53,8 @@ export default function ProcessingScreen() {
           setResult({ ...aiResult, faceData });
         }
       }
+      isAiDoneRef.current = true;
+      setIsAiDone(true);
     };
 
     fetchAIResult();
@@ -54,13 +62,17 @@ export default function ProcessingScreen() {
     const timer = setInterval(() => {
       triggerHaptic('light');
       setStepIndex((prev) => {
+        // If we reached the final step, stop advancing steps, but mark steps as done
         if (prev >= steps.length - 1) {
           clearInterval(timer);
-          // Run side effects on next tick for stability
-          setTimeout(() => {
-            triggerHaptic('success');
-            router.replace('/results');
-          }, 500);
+          setAreStepsDone(true);
+          return prev;
+        }
+        // If we reached the end of normal steps, mark steps as done, but we can advance to the stalled text
+        if (prev === baseSteps.length - 1) {
+          setAreStepsDone(true);
+          // Only advance to the "stalled" text if AI is NOT done yet
+          if (!isAiDoneRef.current) return prev + 1;
           return prev;
         }
         return prev + 1;
@@ -69,6 +81,15 @@ export default function ProcessingScreen() {
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (isAiDone && areStepsDone) {
+      setTimeout(() => {
+        triggerHaptic('success');
+        router.replace('/results');
+      }, 400);
+    }
+  }, [isAiDone, areStepsDone]);
 
   return (
     <AuraBackground>
