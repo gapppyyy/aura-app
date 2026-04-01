@@ -8,7 +8,6 @@ import { MotiView, AnimatePresence } from 'moti';
 import { COLORS } from '@/constants/theme';
 import { LucideX } from 'lucide-react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
-import { useAudioPlayer } from 'expo-audio';
 import { Easing } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
@@ -37,14 +36,13 @@ const PARTICLES = Array.from({ length: 35 }).map(() => ({
 export default function ScanScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
-  const { triggerHaptic, setCapturedImageBase64 } = useAuraContext();
+  const { triggerHaptic, setCapturedImageBase64, scanPlayer } = useAuraContext();
   const [permission, requestPermission] = useCameraPermissions();
   const [stepIndex, setStepIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [scanColor, setScanColor] = useState(COLORS.secondary);
   const [photoTaken, setPhotoTaken] = useState(false);
   const cameraRef = useRef<any>(null);
-  const player = useAudioPlayer(require('../../assets/sounds/scan_sound.m4a'));
 
   const steps = MAGICAL_STEPS;
   
@@ -84,7 +82,10 @@ export default function ScanScreen() {
     // Final navigation
     const navTimer = setTimeout(() => {
       triggerHaptic('success');
-      try { player.pause(); } catch(e) {} // Force stop right before routing
+      try { 
+        scanPlayer?.pause(); 
+        scanPlayer?.seekTo(0);
+      } catch(e) {} // Force stop right before routing
       router.replace('/processing');
     }, TOTAL_DURATION);
     timers.push(navTimer);
@@ -93,7 +94,8 @@ export default function ScanScreen() {
       isMounted = false;
       timers.forEach(clearTimeout);
       try {
-        player.pause();
+        scanPlayer?.pause();
+        scanPlayer?.seekTo(0);
       } catch(e) {}
     };
   }, []);
@@ -105,10 +107,10 @@ export default function ScanScreen() {
     // Retry sending play command 4 times a second until engine says "I am playing!"
     playPoller = setInterval(() => {
       try {
-        if (!player.playing) {
-          player.volume = 1;
-          player.play();
-        } else {
+        if (scanPlayer && !scanPlayer.playing) {
+          scanPlayer.volume = 1;
+          scanPlayer.play();
+        } else if (scanPlayer && scanPlayer.playing) {
           clearInterval(playPoller); // Stop polling once it starts successfully
         }
       } catch (e) {
@@ -149,7 +151,10 @@ export default function ScanScreen() {
       <TouchableOpacity 
         style={styles.closeBtn} 
         onPress={() => {
-          try { player.pause(); } catch(e) {} // Force stop if user panics and exits
+          try { 
+            scanPlayer?.pause(); 
+            scanPlayer?.seekTo(0);
+          } catch(e) {} // Force stop if user panics and exits
           router.back();
         }}
       >
