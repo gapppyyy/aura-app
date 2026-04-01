@@ -8,7 +8,7 @@ import { MotiView, AnimatePresence } from 'moti';
 import { COLORS } from '@/constants/theme';
 import { LucideX } from 'lucide-react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
-import { useAudioPlayer } from 'expo-audio';
+import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import { Easing } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
@@ -54,6 +54,10 @@ export default function ScanScreen() {
 
   useEffect(() => {
     let isMounted = true;
+    
+    // Explicitly configure audio to NOT play through earpiece (which camera forces sometimes) and bypass silent switch
+    setAudioModeAsync({ shouldRouteThroughEarpiece: false, playsInSilentMode: true }).catch(() => {});
+
     const audioTimer = setTimeout(() => {
       try {
         player.play();
@@ -79,7 +83,7 @@ export default function ScanScreen() {
     const photoTimer = setTimeout(() => {
       if (!photoTaken && cameraRef.current) {
         setPhotoTaken(true);
-        cameraRef.current.takePictureAsync({ base64: true, quality: 0.6 })
+        cameraRef.current.takePictureAsync({ base64: true, quality: 0.6, shutterSound: false })
           .then((photo: any) => {
             if (photo?.base64) setCapturedImageBase64(photo.base64);
           })
