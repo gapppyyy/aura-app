@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { useAudioPlayer, AudioPlayer } from 'expo-audio';
+import { SCAN_SOUND_B64 } from '@/constants/audio';
 
 export type UserGender = 'male' | 'female' | 'other';
 
@@ -57,8 +58,8 @@ export const AuraProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [history, setHistory] = useState<AuraReading[]>([]);
   const [capturedImageBase64, setCapturedImageBase64] = useState<string | null>(null);
   
-  // Initialize the native audio player globally so it buffers safely before CameraView ever mounts
-  const scanPlayer = useAudioPlayer(require('../../assets/sounds/scan_sound.m4a'));
+  // Provide the Base64 audio explicitly to circumvent Android Asset bundling bugs!
+  const scanPlayer = useAudioPlayer({ uri: SCAN_SOUND_B64 });
 
   useEffect(() => {
     loadHistory();
