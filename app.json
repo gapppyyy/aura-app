@@ -42,7 +42,8 @@
           "savePhotosPermission": "Solaura AI želi shraniti tvojo manifestacijsko kartico v galerijo.",
           "isAccessMediaLocationEnabled": false
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true
