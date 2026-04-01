@@ -8,7 +8,7 @@ import { MotiView, AnimatePresence } from 'moti';
 import { COLORS } from '@/constants/theme';
 import { LucideX } from 'lucide-react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
-import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
+import { useAudioPlayer, setAudioModeAsync, useAudioPlayerStatus } from 'expo-audio';
 import { Easing } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
@@ -45,6 +45,7 @@ export default function ScanScreen() {
   const [photoTaken, setPhotoTaken] = useState(false);
   const cameraRef = useRef<any>(null);
   const player = useAudioPlayer(require('../../assets/sounds/scan_sound.wav'));
+  const status = useAudioPlayerStatus(player);
 
   const steps = MAGICAL_STEPS;
   
@@ -58,16 +59,8 @@ export default function ScanScreen() {
     // Explicitly configure audio to NOT play through earpiece (which camera forces sometimes) and bypass silent switch
     setAudioModeAsync({ shouldRouteThroughEarpiece: false, playsInSilentMode: true }).catch(() => {});
 
-    const audioTimer = setTimeout(() => {
-      try {
-        player.play();
-      } catch (e) {
-        console.warn('Audio play failed', e);
-      }
-    }, 400);
-
     // Phase and text logic driven by precise timing
-    const timers: NodeJS.Timeout[] = [audioTimer];
+    const timers: NodeJS.Timeout[] = [];
     
     steps.forEach((step, index) => {
       if (step.time > 0) {
@@ -107,6 +100,18 @@ export default function ScanScreen() {
       } catch(e) {}
     };
   }, []);
+
+  // React to the native audio asset successfully buffering off-thread
+  useEffect(() => {
+    if (status.isLoaded && !status.playing) {
+      try {
+        player.volume = 1;
+        player.play();
+      } catch (e) {
+        console.warn('Audio play trigger failed:', e);
+      }
+    }
+  }, [status.isLoaded]);
 
   if (!permission?.granted) {
     return (
