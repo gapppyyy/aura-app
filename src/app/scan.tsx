@@ -87,6 +87,7 @@ export default function ScanScreen() {
     // Final navigation
     const navTimer = setTimeout(() => {
       triggerHaptic('success');
+      try { player.pause(); } catch(e) {} // Force stop right before routing
       router.replace('/processing');
     }, TOTAL_DURATION);
     timers.push(navTimer);
@@ -148,7 +149,13 @@ export default function ScanScreen() {
       <View style={styles.darkOverlay} />
 
       {/* Close button */}
-      <TouchableOpacity style={styles.closeBtn} onPress={() => router.back()}>
+      <TouchableOpacity 
+        style={styles.closeBtn} 
+        onPress={() => {
+          try { player.pause(); } catch(e) {} // Force stop if user panics and exits
+          router.back();
+        }}
+      >
         <LucideX color="rgba(255,255,255,0.7)" size={24} />
       </TouchableOpacity>
 
