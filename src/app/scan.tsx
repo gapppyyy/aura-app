@@ -8,7 +8,7 @@ import { MotiView, AnimatePresence } from 'moti';
 import { COLORS } from '@/constants/theme';
 import { LucideX } from 'lucide-react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
-import { useAudioPlayer, setAudioModeAsync, useAudioPlayerStatus } from 'expo-audio';
+import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import { Easing } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
@@ -45,7 +45,6 @@ export default function ScanScreen() {
   const [photoTaken, setPhotoTaken] = useState(false);
   const cameraRef = useRef<any>(null);
   const player = useAudioPlayer(require('../../assets/sounds/scan_sound.m4a'));
-  const status = useAudioPlayerStatus(player);
 
   const steps = MAGICAL_STEPS;
   
@@ -101,17 +100,26 @@ export default function ScanScreen() {
     };
   }, []);
 
-  // React to the native audio asset successfully buffering off-thread
+  // Bulletproof fallback: constantly poll the C++ Audio engine until playback actually begins
   useEffect(() => {
-    if (status.isLoaded && !status.playing) {
+    let playPoller: NodeJS.Timeout;
+
+    // Retry sending play command 4 times a second until engine says "I am playing!"
+    playPoller = setInterval(() => {
       try {
-        player.volume = 1;
-        player.play();
+        if (!player.playing) {
+          player.volume = 1;
+          player.play();
+        } else {
+          clearInterval(playPoller); // Stop polling once it starts successfully
+        }
       } catch (e) {
-        console.warn('Audio play trigger failed:', e);
+        console.warn('Audio retry failed:', e);
       }
-    }
-  }, [status.isLoaded]);
+    }, 250);
+
+    return () => clearInterval(playPoller);
+  }, []);
 
   if (!permission?.granted) {
     return (
