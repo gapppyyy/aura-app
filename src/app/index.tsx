@@ -282,19 +282,19 @@ const styles = StyleSheet.create({
   },
   logoWrapper: {
     position: 'absolute',
-    top: '12%',
+    top: '15%',
     alignItems: 'center',
   },
   logoImage: {
-    width: 220,
-    height: 220,
+    width: 240,
+    height: 240,
     borderRadius: 55,
     borderWidth: 2,
     borderColor: 'rgba(212, 175, 55, 0.2)',
   },
   bottomContent: {
     position: 'absolute',
-    bottom: 10,
+    bottom: 25,
     left: 24,
     right: 24,
     gap: 16,
