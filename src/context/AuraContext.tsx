@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
-import { useAudioPlayer, AudioPlayer } from 'expo-audio';
-import { SCAN_SOUND_B64 } from '@/constants/audio';
 
 export type UserGender = 'male' | 'female' | 'other';
 
@@ -47,7 +45,6 @@ type AuraContextType = {
   triggerHaptic: (type?: 'light' | 'medium' | 'heavy' | 'success') => void;
   capturedImageBase64: string | null;
   setCapturedImageBase64: (b64: string | null) => void;
-  scanPlayer: AudioPlayer | null;
 };
 
 const AuraContext = createContext<AuraContextType | undefined>(undefined);
@@ -57,9 +54,6 @@ export const AuraProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [result, setResultState] = useState<AuraReading | null>(null);
   const [history, setHistory] = useState<AuraReading[]>([]);
   const [capturedImageBase64, setCapturedImageBase64] = useState<string | null>(null);
-  
-  // Provide the Base64 audio explicitly to circumvent Android Asset bundling bugs!
-  const scanPlayer = useAudioPlayer({ uri: SCAN_SOUND_B64 });
 
   useEffect(() => {
     loadHistory();
@@ -108,7 +102,6 @@ export const AuraProvider: React.FC<{ children: React.ReactNode }> = ({ children
       triggerHaptic,
       capturedImageBase64,
       setCapturedImageBase64,
-      scanPlayer,
     }}>
       {children}
     </AuraContext.Provider>

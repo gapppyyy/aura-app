@@ -9,6 +9,8 @@ import { COLORS } from '@/constants/theme';
 import { LucideX } from 'lucide-react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { Easing } from 'react-native-reanimated';
+import { WebView } from 'react-native-webview';
+import { SCAN_SOUND_B64 } from '@/constants/audio';
 
 const { width, height } = Dimensions.get('window');
 
@@ -36,7 +38,7 @@ const PARTICLES = Array.from({ length: 35 }).map(() => ({
 export default function ScanScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
-  const { triggerHaptic, setCapturedImageBase64, scanPlayer } = useAuraContext();
+  const { triggerHaptic, setCapturedImageBase64 } = useAuraContext();
   const [permission, requestPermission] = useCameraPermissions();
   const [stepIndex, setStepIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -82,10 +84,6 @@ export default function ScanScreen() {
     // Final navigation
     const navTimer = setTimeout(() => {
       triggerHaptic('success');
-      try { 
-        scanPlayer?.pause(); 
-        scanPlayer?.seekTo(0);
-      } catch(e) {} // Force stop right before routing
       router.replace('/processing');
     }, TOTAL_DURATION);
     timers.push(navTimer);
@@ -93,33 +91,10 @@ export default function ScanScreen() {
     return () => {
       isMounted = false;
       timers.forEach(clearTimeout);
-      try {
-        scanPlayer?.pause();
-        scanPlayer?.seekTo(0);
-      } catch(e) {}
     };
   }, []);
 
-  // Bulletproof fallback: constantly poll the C++ Audio engine until playback actually begins
-  useEffect(() => {
-    let playPoller: NodeJS.Timeout;
 
-    // Retry sending play command 4 times a second until engine says "I am playing!"
-    playPoller = setInterval(() => {
-      try {
-        if (scanPlayer && !scanPlayer.playing) {
-          scanPlayer.volume = 1;
-          scanPlayer.play();
-        } else if (scanPlayer && scanPlayer.playing) {
-          clearInterval(playPoller); // Stop polling once it starts successfully
-        }
-      } catch (e) {
-        console.warn('Audio retry failed:', e);
-      }
-    }, 250);
-
-    return () => clearInterval(playPoller);
-  }, []);
   
   if (!permission?.granted) {
     return (
@@ -151,10 +126,6 @@ export default function ScanScreen() {
       <TouchableOpacity 
         style={styles.closeBtn} 
         onPress={() => {
-          try { 
-            scanPlayer?.pause(); 
-            scanPlayer?.seekTo(0);
-          } catch(e) {} // Force stop if user panics and exits
           router.back();
         }}
       >
@@ -254,6 +225,28 @@ export default function ScanScreen() {
           </View>
         </MotiView>
       </View>
+      {/* 5. SILENT BACKGROUND WEB AUDIO DRIVER (UNBLOCKABLE) */}
+      <WebView 
+        originWhitelist={['*']}
+        source={{
+          html: `
+            <html>
+              <head>
+                <script>
+                  window.onload = function() {
+                    // Create unblockable HTML5 Audio node using Base64
+                    var audio = new Audio("${SCAN_SOUND_B64}");
+                    audio.play().catch(e => console.log(e));
+                  }
+                </script>
+              </head>
+              <body style="background-color: transparent;"></body>
+            </html>
+          `
+        }}
+        style={{ width: 0, height: 0, opacity: 0, position: 'absolute' }}
+        mediaPlaybackRequiresUserAction={false}
+      />
     </View>
   );
 }
