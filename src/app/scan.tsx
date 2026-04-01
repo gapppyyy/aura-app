@@ -8,7 +8,7 @@ import { MotiView, AnimatePresence } from 'moti';
 import { COLORS } from '@/constants/theme';
 import { LucideX } from 'lucide-react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
-import { Audio } from 'expo-av';
+import { useAudioPlayer } from 'expo-audio';
 
 const { width, height } = Dimensions.get('window');
 
@@ -43,6 +43,7 @@ export default function ScanScreen() {
   const [scanColor, setScanColor] = useState(COLORS.secondary);
   const [photoTaken, setPhotoTaken] = useState(false);
   const cameraRef = useRef<any>(null);
+  const player = useAudioPlayer(require('../../assets/sounds/scan_sound.wav'));
 
   const steps = MAGICAL_STEPS;
   
@@ -51,26 +52,12 @@ export default function ScanScreen() {
   }, [permission]);
 
   useEffect(() => {
-    let soundObj: Audio.Sound | null = null;
     let isMounted = true;
-
-    async function playMagicalSound() {
-      try {
-        // Play the provided physical sound effect
-        const { sound } = await Audio.Sound.createAsync(
-          require('../../assets/sounds/scan_sound.wav')
-        );
-        if (!isMounted) {
-          sound.unloadAsync();
-          return;
-        }
-        soundObj = sound;
-        await sound.playAsync();
-      } catch (error) {
-        console.warn('Could not play magical aura sound:', error);
-      }
+    try {
+      player.play();
+    } catch (e) {
+      console.warn('Audio play failed', e);
     }
-    playMagicalSound();
 
     // Phase and text logic driven by precise timing
     const timers: NodeJS.Timeout[] = [];
@@ -89,7 +76,7 @@ export default function ScanScreen() {
     const photoTimer = setTimeout(() => {
       if (!photoTaken && cameraRef.current) {
         setPhotoTaken(true);
-        cameraRef.current.takePictureAsync({ base64: true, quality: 0.6, skipProcessing: true })
+        cameraRef.current.takePictureAsync({ base64: true, quality: 0.6 })
           .then((photo: any) => {
             if (photo?.base64) setCapturedImageBase64(photo.base64);
           })
@@ -108,9 +95,9 @@ export default function ScanScreen() {
     return () => {
       isMounted = false;
       timers.forEach(clearTimeout);
-      if (soundObj) {
-        soundObj.stopAsync().then(() => soundObj!.unloadAsync()).catch(() => {});
-      }
+      try {
+        player.pause();
+      } catch(e) {}
     };
   }, []);
 
