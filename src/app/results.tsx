@@ -41,10 +41,17 @@ const { width } = Dimensions.get('window');
 
 const AURA_COLOR_MAP: Record<string, string> = {
   green: '#00E5A0',
+  jade: '#00E5A0',
   blue: '#5B8AF0',
+  indigo: '#4B0082',
+  'cosmic blue': '#2E5BFF',
   red: '#FF4D6D',
+  ruby: '#E0115F',
   yellow: '#FFD700',
+  gold: '#FFD700',
   violet: '#B06EFF',
+  'solar orange': '#FF8C00',
+  orange: '#FF8C00',
 };
 
 export default function ResultsScreen() {

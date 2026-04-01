@@ -99,7 +99,7 @@ INSTRUCTIONS:
 Return ONLY valid JSON:
 {
   "color": "indigo | jade | ruby | gold | violet | cosmic blue | solar orange",
-  "title": "Short poetic mystical aura title (max 8 words)",
+  "title": "${isSlove ? 'Kratek poetičen mističen naslov avre v SLOVENŠČINI (največ 8 besed)' : 'Short poetic mystical aura title (max 8 words)'}",
   "face_reading": "${isSlove ? '2-3 stavki — kaj si videl/a SAMO na obrazu: napetost, energija, odprtost, svetloba.' : '2-3 sentences — what you saw ONLY in the face: tension, energy, openness, light.'}",
   "description": "${isSlove ? '4-5 bogatih odstavkov globoke osebne duhovne in ASTROLOŠKE analize. Obvezno poveži njihovo zodiakalno znamenje in avro.' : '4-5 rich paragraphs of deep personal spiritual and ASTROLOGICAL analysis. You must connect their zodiac sign to their current aura.'}",
   "resonance": <integer 62–97>,
