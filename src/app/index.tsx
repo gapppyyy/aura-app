@@ -8,7 +8,7 @@ import { COLORS } from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'react-native';
 import { useAuraContext } from '@/context/AuraContext';
-import { LucideHistory, LucideX, LucideSparkles } from 'lucide-react-native';
+import { LucideHistory, LucideX, LucideSparkles, LucideGlobe } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
@@ -73,25 +73,22 @@ export default function HookScreen() {
     <>
       <AuraBackground>
         <View style={styles.container}>
-          {/* Language switcher - top center, slim */}
+          {/* Global Language Toggle - Discreet Top Right */}
           <MotiView
-            from={{ opacity: 0, translateY: -20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: 'timing', delay: 300 }}
-            style={styles.langRow}
+            from={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'timing', delay: 400 }}
+            style={[styles.langToggleContainer, { top: insets.top + 10 }]}
           >
             <TouchableOpacity
-              onPress={() => changeLanguage('sl')}
-              style={[styles.langBtn, i18nBase.language === 'sl' && styles.langBtnActive]}
+              onPress={() => changeLanguage(i18nBase.language === 'sl' ? 'en' : 'sl')}
+              style={styles.langToggleBtn}
+              activeOpacity={0.7}
             >
-              <Text style={[styles.langBtnText, i18nBase.language === 'sl' && styles.langBtnTextActive]}>SLO</Text>
-            </TouchableOpacity>
-            <View style={styles.langDivider} />
-            <TouchableOpacity
-              onPress={() => changeLanguage('en')}
-              style={[styles.langBtn, i18nBase.language === 'en' && styles.langBtnActive]}
-            >
-              <Text style={[styles.langBtnText, i18nBase.language === 'en' && styles.langBtnTextActive]}>ENG</Text>
+              <LucideGlobe color={COLORS.secondary} size={18} />
+              <Text style={styles.langToggleText}>
+                {i18nBase.language === 'sl' ? 'SLO' : 'ENG'}
+              </Text>
             </TouchableOpacity>
           </MotiView>
 
@@ -247,38 +244,27 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  langRow: {
+  langToggleContainer: {
     position: 'absolute',
-    top: 60,
+    right: 20,
+    zIndex: 10,
+  },
+  langToggleBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 30,
-    padding: 4,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(212, 175, 55, 0.15)',
+    borderColor: 'rgba(212, 175, 55, 0.2)',
+    gap: 8,
   },
-  langBtn: {
-    paddingHorizontal: 22,
-    paddingVertical: 9,
-    borderRadius: 25,
-  },
-  langBtnActive: {
-    backgroundColor: 'rgba(212, 175, 55, 0.2)',
-  },
-  langBtnText: {
-    color: 'rgba(255,255,255,0.4)',
-    fontSize: 12,
-    fontWeight: '700',
+  langToggleText: {
+    color: COLORS.secondary,
+    fontSize: 11,
+    fontWeight: '800',
     letterSpacing: 1,
-  },
-  langBtnTextActive: {
-    color: '#D4AF37',
-  },
-  langDivider: {
-    width: 1,
-    height: 15,
-    backgroundColor: 'rgba(212, 175, 55, 0.3)',
   },
   logoWrapper: {
     position: 'absolute',
