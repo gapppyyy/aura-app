@@ -8,7 +8,7 @@ import { MotiView, AnimatePresence } from 'moti';
 import { COLORS } from '@/constants/theme';
 import { LucideX } from 'lucide-react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
-import { Audio } from 'expo-av';
+import { useAudioPlayer } from 'expo-audio';
 import { Easing } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
@@ -44,7 +44,7 @@ export default function ScanScreen() {
   const [scanColor, setScanColor] = useState(COLORS.secondary);
   const [photoTaken, setPhotoTaken] = useState(false);
   const cameraRef = useRef<any>(null);
-  const soundRef = useRef<Audio.Sound | null>(null);
+  const player = useAudioPlayer(require('../../assets/sounds/scan_sound.m4a'));
 
   const steps = MAGICAL_STEPS;
   
@@ -55,35 +55,6 @@ export default function ScanScreen() {
   useEffect(() => {
     let isMounted = true;
     
-    // Robust Expo-AV Native Initialization
-    async function startAudio() {
-      try {
-        await Audio.setAudioModeAsync({
-          // @ts-ignore
-          playsInSilentMode: true,
-          playsInSilentModeIOS: true,
-          shouldRouteThroughEarpiece: false,
-          interruptionModeAndroid: 1, // DO_NOT_MIX
-          interruptionModeIOS: 1 // DO_NOT_MIX
-        });
-        
-        const { sound } = await Audio.Sound.createAsync(
-          require('../../assets/sounds/scan_sound.m4a'),
-          { shouldPlay: true, isLooping: true, volume: 1.0 }
-        );
-        
-        if (isMounted) {
-          soundRef.current = sound;
-          await sound.playAsync();
-        } else {
-          sound.unloadAsync(); // Stop playing if component unmounted while loading
-        }
-      } catch (e) {
-        console.warn('Expo-AV Audio load failed', e);
-      }
-    }
-    startAudio();
-
     // Phase and text logic driven by precise timing
     const timers: NodeJS.Timeout[] = [];
     
@@ -113,7 +84,7 @@ export default function ScanScreen() {
     // Final navigation
     const navTimer = setTimeout(() => {
       triggerHaptic('success');
-      try { soundRef.current?.stopAsync(); } catch(e) {} // Force stop right before routing
+      try { player.pause(); } catch(e) {} // Force stop right before routing
       router.replace('/processing');
     }, TOTAL_DURATION);
     timers.push(navTimer);
@@ -121,17 +92,33 @@ export default function ScanScreen() {
     return () => {
       isMounted = false;
       timers.forEach(clearTimeout);
-      if (soundRef.current) {
-        try {
-          soundRef.current.stopAsync();
-          soundRef.current.unloadAsync();
-        } catch(e) {}
-      }
+      try {
+        player.pause();
+      } catch(e) {}
     };
   }, []);
 
+  // Bulletproof fallback: constantly poll the C++ Audio engine until playback actually begins
+  useEffect(() => {
+    let playPoller: NodeJS.Timeout;
 
+    // Retry sending play command 4 times a second until engine says "I am playing!"
+    playPoller = setInterval(() => {
+      try {
+        if (!player.playing) {
+          player.volume = 1;
+          player.play();
+        } else {
+          clearInterval(playPoller); // Stop polling once it starts successfully
+        }
+      } catch (e) {
+        console.warn('Audio retry failed:', e);
+      }
+    }, 250);
 
+    return () => clearInterval(playPoller);
+  }, []);
+  
   if (!permission?.granted) {
     return (
       <View style={styles.container}>
@@ -162,7 +149,7 @@ export default function ScanScreen() {
       <TouchableOpacity 
         style={styles.closeBtn} 
         onPress={() => {
-          try { soundRef.current?.stopAsync(); } catch(e) {} // Force stop if user panics and exits
+          try { player.pause(); } catch(e) {} // Force stop if user panics and exits
           router.back();
         }}
       >
