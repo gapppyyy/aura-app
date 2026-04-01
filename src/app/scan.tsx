@@ -54,14 +54,16 @@ export default function ScanScreen() {
 
   useEffect(() => {
     let isMounted = true;
-    try {
-      player.play();
-    } catch (e) {
-      console.warn('Audio play failed', e);
-    }
+    const audioTimer = setTimeout(() => {
+      try {
+        player.play();
+      } catch (e) {
+        console.warn('Audio play failed', e);
+      }
+    }, 400);
 
     // Phase and text logic driven by precise timing
-    const timers: NodeJS.Timeout[] = [];
+    const timers: NodeJS.Timeout[] = [audioTimer];
     
     steps.forEach((step, index) => {
       if (step.time > 0) {

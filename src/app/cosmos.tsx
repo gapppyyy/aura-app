@@ -1,38 +1,39 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { AuraBackground } from '@/components/AuraBackground';
 import { COLORS } from '@/constants/theme';
 import { useAuraContext } from '@/context/AuraContext';
-import { LucideChevronLeft, LucideStar } from 'lucide-react-native';
+import { LucideChevronLeft, LucideStar, LucideHeart, LucideBriefcase, LucideSparkles } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import { ZODIAC_SIGNS } from '@/utils/astrology';
+import { generateDailyHoroscope } from '@/utils/dailyHoroscope';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
-// Simple static descriptions for the cosmic dashboard
 const ASTROMAP: Record<string, { sl: string, en: string, color: string }> = {
-  aries: { sl: 'Tvoja energija je polna pionirske moči in strasti.', en: 'Your energy is filled with pioneering power and passion.', color: '#FF4500' },
+  aries: { sl: 'Tvoja energija je polna pionirske moči.', en: 'Your energy is filled with pioneering power.', color: '#FF4500' },
   taurus: { sl: 'Tvoja avra vibrira s stabilnostjo in zemeljsko toplino.', en: 'Your aura vibrates with stability and earthly warmth.', color: '#228B22' },
   gemini: { sl: 'Tvoja prisotnost prinaša komunikativno in zračno lahkotnost.', en: 'Your presence brings communicative and airy lightness.', color: '#FFD700' },
-  cancer: { sl: 'Globoka voda tvoje duše nudi intuitivno in čustveno zavetje.', en: 'The deep water of your soul offers intuitive and emotional shelter.', color: '#C0C0C0' },
+  cancer: { sl: 'Globoka voda tvoje duše nudi intuitivno zavetje.', en: 'The deep water of your soul offers intuitive shelter.', color: '#C0C0C0' },
   leo: { sl: 'V tvoji avri gori kreativen ogenj in plemenit sijaj.', en: 'A creative fire and noble glow burn within your aura.', color: '#FFA500' },
-  virgo: { sl: 'Tvoja naravnanost je analitična in popolnoma prežeta z iskanjem popolnosti.', en: 'Your disposition is analytical and entirely permeated by a quest for perfection.', color: '#8FBC8F' },
+  virgo: { sl: 'Tvoja naravnanost je zdrava in iskalna popolnosti.', en: 'Your disposition is analytical and seeking perfection.', color: '#8FBC8F' },
   libra: { sl: 'V tebi vlada iskanje harmonije in estetske lepote.', en: 'A search for harmony and aesthetic beauty rules within you.', color: '#FFB6C1' },
-  scorpio: { sl: 'Tvoja energija je intenzivna, transformativna in mistična.', en: 'Your energy is intense, transformative, and mystical.', color: '#8B0000' },
-  sagittarius: { sl: 'Tvoj svobodni duh neprestano išče višjo resnico in obzorja.', en: 'Your free spirit constantly seeks higher truths and horizons.', color: '#9370DB' },
-  capricorn: { sl: 'Tvoj kozmični zapis prinaša disciplino in ambiciozen vzpon.', en: 'Your cosmic imprint brings discipline and an ambitious ascent.', color: '#8B4513' },
-  aquarius: { sl: 'Tvaje frekvenca je napredna, uporniška in izjemno vizionarska.', en: 'Your frequency is progressive, rebellious, and highly visionary.', color: '#00CED1' },
-  pisces: { sl: 'Si most med domišljijo in duhovnimi dimenzijami univerzuma.', en: 'You are the bridge between imagination and the spiritual dimensions of the universe.', color: '#20B2AA' },
+  scorpio: { sl: 'Tvoja energija je intenzivna in mistična.', en: 'Your energy is intense, transformative, and mystical.', color: '#8B0000' },
+  sagittarius: { sl: 'Tvoj svobodni duh neprestano išče višjo resnico.', en: 'Your free spirit constantly seeks higher truths.', color: '#9370DB' },
+  capricorn: { sl: 'Tvoj kozmični zapis prinaša disciplino in vzpon.', en: 'Your cosmic imprint brings discipline and an ambitious ascent.', color: '#8B4513' },
+  aquarius: { sl: 'Tvoja frekvenca je napredna in uporniška.', en: 'Your frequency is progressive, rebellious, and highly visionary.', color: '#00CED1' },
+  pisces: { sl: 'Si most med domišljijo in duhovnimi dimenzijami.', en: 'You are the bridge between imagination and spiritual dimensions.', color: '#20B2AA' },
 };
 
 export default function CosmosScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
-  const { userData, triggerHaptic } = useAuraContext();
+  const { userData } = useAuraContext();
   
   const sl = i18n.language.startsWith('sl');
 
@@ -43,7 +44,7 @@ export default function CosmosScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
             <LucideChevronLeft color="#FFF" size={28} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{sl ? 'Kozmos' : 'Cosmos'}</Text>
+          <Text style={styles.headerTitle}>{sl ? 'Kosmični Pregled' : 'Cosmic Overview'}</Text>
           <View style={{ width: 44 }} />
         </View>
         <View style={styles.emptyState}>
@@ -61,50 +62,95 @@ export default function CosmosScreen() {
   const sign = ZODIAC_SIGNS.find(z => z.id === userData.zodiacSignId)!;
   const description = ASTROMAP[sign.id];
 
+  // Generate deterministic horoscopes matching today's date
+  const reading = useMemo(() => generateDailyHoroscope(sign.id, i18n.language as 'sl' | 'en'), [sign.id, i18n.language]);
+
+  const todayStr = new Date().toLocaleDateString(sl ? 'sl-SI' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+
   return (
     <AuraBackground>
       <View style={[styles.header, { paddingTop: Math.max(60, insets.top + 10) }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <LucideChevronLeft color="#FFF" size={28} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{sl ? 'Kozmos' : 'Cosmos'}</Text>
+        <Text style={styles.headerTitle}>{sl ? 'Dnevni Horoskop' : 'Daily Horoscope'}</Text>
         <View style={{ width: 44 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <MotiView
-          from={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          style={[styles.astroCard, { borderColor: description.color }]}
+          from={{ opacity: 0, translateY: 20 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', duration: 600 }}
         >
-          <Text style={styles.emoji}>{sign.emoji}</Text>
-          <Text style={styles.signTitle}>
-             {sl ? sign.sl : sign.en}
-          </Text>
-          
-          <View style={styles.tagRow}>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{sl ? 'Element' : 'Element'}: {sl ? sign.element : sign.element === 'ognjeno' ? 'Fire' : sign.element === 'vodno' ? 'Water' : sign.element === 'zračno' ? 'Air' : 'Earth'}</Text>
+          {/* Top Profile Banner */}
+          <LinearGradient
+            colors={[`${description.color}80`, 'rgba(25, 18, 54, 0.4)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.bannerBlock}
+          >
+            <View style={styles.bannerHeader}>
+              <Text style={styles.emojiGiant}>{sign.emoji}</Text>
+              <View>
+                <Text style={styles.signTitleRaw}>{sl ? sign.sl : sign.en}</Text>
+                <Text style={styles.dateTitle}>{todayStr}</Text>
+              </View>
             </View>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{sl ? 'Rojstvo' : 'Birth'}: {new Date(userData.birthDate).toLocaleDateString()}</Text>
+            <Text style={styles.bannerGreeting}>
+              {sl ? 'Kako vibrira tvoja energija danes, ' : 'How is your energy vibrating today, '}{userData.name}?
+            </Text>
+            
+            <View style={styles.vitalStatsBox}>
+              <View style={styles.statCol}>
+                <Text style={styles.statLabel}>{sl ? 'Srečna Številka' : 'Lucky Number'}</Text>
+                <Text style={[styles.statValue, { color: COLORS.secondary }]}>{reading.luckyNumber}</Text>
+              </View>
+              <View style={styles.statDiv} />
+              <View style={styles.statCol}>
+                <Text style={styles.statLabel}>{sl ? 'Energija Dneva' : 'Cosmic Power'}</Text>
+                <Text style={[styles.statValue, { color: '#00FA9A' }]}>{reading.powerStat}%</Text>
+              </View>
+              <View style={styles.statDiv} />
+              <View style={styles.statCol}>
+                <Text style={styles.statLabel}>{sl ? 'Tvoja Barva' : 'Your Color'}</Text>
+                <Text style={[styles.statValue, { color: '#FF69B4', fontSize: 13, textTransform: 'capitalize' }]}>{reading.luckyColor}</Text>
+              </View>
             </View>
+
+          </LinearGradient>
+
+          {/* Main Daily Forecast */}
+          <View style={styles.cardBlock}>
+            <View style={styles.cardHeader}>
+               <LucideSparkles color={COLORS.secondary} size={24} />
+               <Text style={styles.cardTitle}>{sl ? 'Osrednja Napoved' : 'Main Forecast'}</Text>
+            </View>
+            <Text style={styles.cardText}>{reading.theme}</Text>
           </View>
 
-          <Text style={styles.greetingTitle}>
-            {sl ? 'Pozdravljen/a, ' : 'Greetings, '}{userData.name}
-          </Text>
+          {/* Love Sector */}
+          <View style={[styles.cardBlock, { backgroundColor: 'rgba(255, 105, 180, 0.05)', borderColor: 'rgba(255, 105, 180, 0.2)' }]}>
+            <View style={styles.cardHeader}>
+               <LucideHeart color="#FF69B4" size={24} />
+               <Text style={styles.cardTitle}>{sl ? 'Ljubezen & Odnosi' : 'Love & Relationships'}</Text>
+            </View>
+            <Text style={styles.cardText}>{reading.love}</Text>
+          </View>
+
+          {/* Career Sector */}
+          <View style={[styles.cardBlock, { backgroundColor: 'rgba(138, 43, 226, 0.05)', borderColor: 'rgba(138, 43, 226, 0.2)' }]}>
+            <View style={styles.cardHeader}>
+               <LucideBriefcase color="#C084FC" size={24} />
+               <Text style={styles.cardTitle}>{sl ? 'Kariera & Finance' : 'Career & Finance'}</Text>
+            </View>
+            <Text style={styles.cardText}>{reading.career}</Text>
+          </View>
           
-          <View style={styles.divider} />
-          
-          <Text style={styles.descText}>
-            {sl ? description.sl : description.en}
-          </Text>
-          
-          <Text style={styles.infoText}>
+          <Text style={styles.infoFooterText}>
             {sl 
-            ? 'Na tvoje trenutno energijsko polje ključno vpliva tvoje Sončno znamenje. Vsakič, ko skeniraš avro, naša AI uporabi to vibracijo za še bolj natančno in personalizirano branje, prirejeno samo tvoji duši.'
-            : 'Your current energy field is centrally influenced by your Sun Sign. Every time you scan your aura, our AI uses this vibration for an even more precise and personalized reading tailored exclusively to your soul.'}
+            ? 'Na tvoje vsakdanje energijsko polje ključno vplivajo asinkroni planetarni premiki glede na tvoje Sončno znamenje. Preveri vsak dan za nov prilagojen Kozmični vpogled.'
+            : 'Your daily energy field is heavily influenced by asynchronous planetary movements against your Sun Sign. Check back daily for a new Cosmic Insight.'}
           </Text>
 
         </MotiView>
@@ -143,79 +189,113 @@ const styles = StyleSheet.create({
     padding: 40,
   },
   emptyText: {
-    fontFamily: 'Inter-Regular',
+    fontFamily: 'Outfit-Regular',
     fontSize: 16,
     color: 'rgba(255,255,255,0.6)',
     textAlign: 'center',
     lineHeight: 24,
   },
   scrollContent: {
-    padding: 24,
+    padding: 20,
     paddingBottom: 60,
   },
-  astroCard: {
-    backgroundColor: 'rgba(10,10,30,0.6)',
+  bannerBlock: {
     borderRadius: 24,
-    padding: 30,
+    padding: 24,
     borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    marginBottom: 20,
+  },
+  bannerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginBottom: 16,
+  },
+  emojiGiant: {
+    fontSize: 50,
+  },
+  signTitleRaw: {
+    color: '#FFF',
+    fontFamily: 'Outfit-Bold',
+    fontSize: 28,
+    letterSpacing: 1,
+  },
+  dateTitle: {
+    color: 'rgba(255,255,255,0.7)',
+    fontFamily: 'Outfit-Medium',
+    fontSize: 14,
+    marginTop: 2,
+  },
+  bannerGreeting: {
+    color: 'rgba(255,255,255,0.9)',
+    fontFamily: 'Outfit-Regular',
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 24,
+  },
+  vitalStatsBox: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  emoji: {
-    fontSize: 70,
-    marginBottom: 10,
+  statCol: {
+    alignItems: 'center',
+    flex: 1,
   },
-  signTitle: {
+  statLabel: {
+    color: 'rgba(255,255,255,0.5)',
+    fontFamily: 'Outfit-Medium',
+    fontSize: 11,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  statValue: {
     fontFamily: 'Outfit-Bold',
-    fontSize: 32,
-    color: '#FFF',
-    marginBottom: 20,
-    textAlign: 'center',
+    fontSize: 18,
   },
-  tagRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 30,
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  tag: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+  statDiv: {
+    width: 1,
+    height: 30,
     backgroundColor: 'rgba(255,255,255,0.1)',
   },
-  tagText: {
-    fontFamily: 'Inter-Medium',
+  cardBlock: {
+    backgroundColor: 'rgba(20, 15, 40, 0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 16,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  cardTitle: {
     color: '#FFF',
-    fontSize: 12,
-    textTransform: 'uppercase',
-  },
-  greetingTitle: {
-    fontFamily: 'Outfit-Medium',
-    fontSize: 20,
-    color: COLORS.secondary,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  divider: {
-    width: 40,
-    height: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    marginBottom: 20,
-  },
-  descText: {
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Outfit-SemiBold',
     fontSize: 18,
-    color: '#FFF',
-    textAlign: 'center',
-    lineHeight: 28,
-    marginBottom: 20,
   },
-  infoText: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.6)',
+  cardText: {
+    color: 'rgba(255,255,255,0.75)',
+    fontFamily: 'Outfit-Regular',
+    fontSize: 15,
+    lineHeight: 24,
+  },
+  infoFooterText: {
+    color: 'rgba(255,255,255,0.4)',
+    fontFamily: 'Outfit-Regular',
+    fontSize: 12,
+    lineHeight: 18,
     textAlign: 'center',
-    lineHeight: 22,
+    marginTop: 10,
+    paddingHorizontal: 20,
   }
 });
