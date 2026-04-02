@@ -45,6 +45,7 @@ type AuraContextType = {
   triggerHaptic: (type?: 'light' | 'medium' | 'heavy' | 'success') => void;
   capturedImageBase64: string | null;
   setCapturedImageBase64: (b64: string | null) => void;
+  scanCount: number;
 };
 
 const AuraContext = createContext<AuraContextType | undefined>(undefined);
@@ -54,8 +55,10 @@ export const AuraProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [result, setResultState] = useState<AuraReading | null>(null);
   const [history, setHistory] = useState<AuraReading[]>([]);
   const [capturedImageBase64, setCapturedImageBase64] = useState<string | null>(null);
+  const [scanCount, setScanCount] = useState(0);
 
   useEffect(() => {
+    loadSettings();
     loadHistory();
   }, []);
 
@@ -66,14 +69,27 @@ export const AuraProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e) { console.error(e); }
   };
 
+  const loadSettings = async () => {
+    try {
+      const count = await AsyncStorage.getItem('aura_scan_count');
+      if (count) setScanCount(parseInt(count, 10));
+    } catch (e) { console.error(e); }
+  };
+
   const setResult = async (newResult: AuraReading) => {
     // Attach current userData if not already present
     const readingWithUser = { ...newResult, userData: newResult.userData || (userData || undefined) };
     setResultState(readingWithUser);
     const newHistory = [readingWithUser, ...history].slice(0, 20);
     setHistory(newHistory);
+    
+    // Increment scan count
+    const newCount = scanCount + 1;
+    setScanCount(newCount);
+    
     try {
       await AsyncStorage.setItem('aura_history', JSON.stringify(newHistory));
+      await AsyncStorage.setItem('aura_scan_count', newCount.toString());
     } catch (e) { console.error(e); }
   };
 
@@ -102,6 +118,7 @@ export const AuraProvider: React.FC<{ children: React.ReactNode }> = ({ children
       triggerHaptic,
       capturedImageBase64,
       setCapturedImageBase64,
+      scanCount,
     }}>
       {children}
     </AuraContext.Provider>
